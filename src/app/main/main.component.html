@@ -1,0 +1,119 @@
+<div class="content">
+    <div class="wrapper">
+        <div class="time-tracker">
+
+            <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                <mat-label>Wähle ein Datum</mat-label>
+                <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" [matDatepickerFilter]="dateFilter"
+                    (dateChange)="onDateChange()">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            @if(currentWeekday) {
+            <div class="weekday-container">
+                <div class="day-box">
+                    <div class="day">
+                        <h3>{{ currentWeekday.day }}</h3>
+                        <h3>{{ selectedDate | date:'dd.MM.yyyy'}}</h3>
+                    </div>
+                </div>
+
+                <div class="time-row">
+                    <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                        <mat-label>Startzeit</mat-label>
+                        <input matInput type="time" [(ngModel)]="currentWeekday.startTime" required>
+                    </mat-form-field>
+                    <button [matMenuTriggerFor]="startMenu" class="quick-select-btn">
+                        <mat-icon>arrow_drop_down</mat-icon>
+                    </button>
+                    <mat-menu #startMenu="matMenu">
+                        <button mat-menu-item *ngFor="let time of dataStoreService.startQuickTimes"
+                            (click)="setStartTime(time, currentWeekday)">
+                            {{ time }}
+                        </button>
+                    </mat-menu>
+                </div>
+
+                <div class="time-row">
+                    <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                        <mat-label>Endzeit</mat-label>
+                        <input matInput type="time" [(ngModel)]="currentWeekday.endTime" required>
+                    </mat-form-field>
+                    <button [matMenuTriggerFor]="endMenu" class="quick-select-btn">
+                        <mat-icon>arrow_drop_down</mat-icon>
+                    </button>
+                    <mat-menu #endMenu="matMenu">
+                        <button mat-menu-item *ngFor="let time of dataStoreService.endQuickTimes"
+                            (click)="setEndTime(time, currentWeekday)">
+                            {{ time }}
+                        </button>
+                    </mat-menu>
+                </div>
+                Pause
+                <div class="time-row">
+                    <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                        <mat-label>Dauer in Minuten</mat-label>
+                        <input matInput type="number" [(ngModel)]="currentWeekday.breakMinutes" required>
+                    </mat-form-field>
+                    <button [matMenuTriggerFor]="break" class="quick-select-btn">
+                        <mat-icon>arrow_drop_down</mat-icon>
+                    </button>
+                    <mat-menu #break="matMenu">
+                        <button mat-menu-item *ngFor="let minutes of dataStoreService.breakDurations"
+                            (click)="setBreak(minutes, currentWeekday)">
+                            {{ minutes }}
+                        </button>
+                    </mat-menu>
+                </div>
+                <button mat-raised-button color="primary" (click)="calculateTime(currentWeekday)"
+                    [disabled]="!currentWeekday.startTime || !currentWeekday.endTime">
+                    <!-- <mat-icon>calculate</mat-icon> -->
+                    Arbeitszeit berechnen
+                </button>
+            </div>
+
+            @if (calculationFinished && currentWeekday.timeWorked) {
+            <div class="result">
+                <div class="time-diff-container">
+                    <span class="time-diff">
+                        {{ currentWeekday.timeWorked }}
+                    </span>
+                    <span class="comparing-diff">
+                        @if(currentWeekday.breakMinutes > 0) {
+                        ({{ currentWeekday.timeWithoutBreak }} ohne Pause)
+                        }
+                    </span>
+
+                </div>
+            </div>
+
+            <div class="submit-container">
+                <button mat-raised-button color="primary" (click)="safeDay(currentWeekday)"
+                    [disabled]="!currentWeekday.startTime || !currentWeekday.endTime">
+                    <!-- <mat-icon>calculate</mat-icon> -->
+                    Speichern
+                </button>
+            </div>
+            }
+            }
+
+
+
+        </div>
+        <div class="logs">
+            @for (entry of allTimerecords; track $index) {
+                <div class="logs">
+                    <span> {{entry.date | date:'dd.MM.yyyy' }}</span>
+                    <span>{{ entry.day }}</span>
+                    <span>{{ entry.startTime }} - {{ entry.endTime }}</span>
+                    <span>Break: {{ entry.breakMinutes }} minutes</span>
+                    <span>Time worked: {{ entry.timeWorked }}</span>
+                    <!-- <span>{{ entry.timeWithoutBreak }}</span> -->
+                     <br>
+                </div>
+          
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+@mixin position(
+  $pos: null,
+  $top: null,
+  $left: null,
+  $bot: null,
+  $rig: null,
+  $zi: null
+) {
+  position: $pos;
+  top: $top;
+  left: $left;
+  bottom: $bot;
+  right: $rig;
+  z-index: $zi;
+}
+
+@mixin display-flex(
+  $dis: flex,
+  $jc: center,
+  $ai: center,
+  $fd: row,
+  $gap: null
+) {
+  display: $dis;
+  justify-content: $jc;
+  align-items: $ai;
+  flex-direction: $fd;
+  gap: $gap;
+}
+
+@mixin font-style($fs: null, $fw: null, $c: null, $ff: null) {
+  font-size: $fs;
+  font-weight: $fw;
+  color: $c;
+  font-family: $ff;
+}
+
+@mixin pseudo($dis: block, $pos: absolute, $con: "") {
+  display: $dis;
+  position: $pos;
+  content: $con;
+}
+
+@mixin button-style($bg-col, $txt-col: null, $pad: 12px 25px, $bor: none) {
+  @include display-flex($gap: 10px);
+  background-color: $bg-col;
+  color: $txt-col;
+  padding: $pad;
+  border-radius: 50px;
+  border: $bor;
+  outline: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: 225ms ease-in-out, transform 225ms ease-in-out;
+  &:disabled {
+    border: none;
+    color: $primary-color-white;
+    background-color: $text-color-gray;
+    cursor: not-allowed;
+  }
+}
+
+@mixin input-style($pad: 20px, $bg: null) {
+  padding: $pad;
+  border: 1px solid transparent;
+  border-radius: 30px;
+  outline: none;
+  background-color: $bg;
+  cursor: pointer;
+  width: 100%;
+  @include font-style($font-size-18, $font-weight-500, $text-color-black);
+  &::placeholder {
+    @include font-style(18px, 500, $text-color-gray);
+  }
+  &:hover {
+    border-color: $secondary-color-purple;
+  }
+  &:focus {
+    border-color: $primary-color-purple;
+  }
+}
+
+@mixin size($width: null, $height: null, $pad: null) {
+  width: $width;
+  height: $height;
+  padding: $pad;
+}
+
+@mixin href-style($bor: $border-color-purple, $bg: null) {
+  @include display-flex($gap: 10px);
+  @include font-style($font-size-18, $font-weight-400, $secondary-color-purple);
+  border: 1px solid transparent;
+  text-decoration: none;
+  padding: 10px 15px;
+  &:hover {
+    @include font-style($font-size-18, $font-weight-500, $primary-color-purple);
+    cursor: pointer;
+    border-color: $bor;
+    border-radius: 30px;
+    background: $bg;
+  }
+}
