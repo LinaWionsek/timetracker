@@ -102,25 +102,6 @@
 
 
         </div>
-        <div class="logs-container">
-            <div class="move-container">
-                @for (entry of allTimerecords; track $index) {
-
-                    <div class="logs">
-                        <div class="logs-date">
-                            <span>{{ entry.day }} {{entry.date | date:'dd.MM.yyyy' }} </span>
-                            <span>{{ entry.startTime }} - {{ entry.endTime }} </span>
-                        </div>
-                        <div class="logs-hours">
-                            <span class="bold">{{ entry.timeWorked }}</span>
-                            <span>Break: {{ entry.breakMinutes }} minutes</span>
-                            <!-- <span>{{ entry.timeWithoutBreak }}</span> -->
-                        </div>
-                    </div>
-        
-                    }
-            </div>
-           
-        </div>
+        <app-last-records></app-last-records>
     </div>
 </div>

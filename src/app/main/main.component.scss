@@ -134,44 +134,6 @@
     color: #c62828;
   }
 }
-.logs-container {
-  @include display-flex($fd: column, $gap: 16px);
-  background-color: #ffffff;
-  width: 330px;
-  height: 500px;
-  padding: 32px 16px;
-  border-radius: 4px;
-}
-.move-container {
-  height: 100%;
-  overflow-y: auto;
-  scrollbar-color: #3f51b5 white;
-}
-.logs-hours {
-  @include display-flex($fd: column, $ai: flex-start);
-   background-color: hsla(206, 100%, 73%, 0.342);
-   padding-top: 8px;
-}
-
-.logs {
-  @include size($width: 300px);
-  border-radius: 4px;
-  padding: 4px ;
-  background-color: hsla(206, 100%, 73%, 0.432);
-
-  margin-bottom: 16px;
-}
-
-.logs-date{
-  @include display-flex($jc: space-between);
-  // font-size: 18px;
-  font-weight: 500;
-}
-
-.bold {
-  font-weight: 500;
-}
-
 
 
 

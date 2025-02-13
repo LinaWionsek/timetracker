@@ -1,4 +1,6 @@
 import { timeRecords } from './../../app/types/types';
+import { startOfWeek, format } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 export class Timerecords {
     date: Date | string;
@@ -21,6 +23,21 @@ export class Timerecords {
         this.totalMinutes = data?.totalMinutes ?? 0;
     }
     
+    // static groupByWeek(records: Timerecords[]) {
+    //     const weeks: { [key: string]: number } = {};
+        
+    //     records.forEach(record => {
+    //         const weekStart = startOfWeek(new Date(record.date), { weekStartsOn: 1 });
+    //         const weekKey = format(weekStart, 'yyyy-MM-dd');
+            
+    //         weeks[weekKey] = (weeks[weekKey] || 0) + (record.totalMinutes || 0);
+    //     });
+
+    //     return Object.entries(weeks).map(([date, minutes]) => ({
+    //         weekStart: date,
+    //         totalHours: `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`
+    //     }));
+    // }
 }
 
 

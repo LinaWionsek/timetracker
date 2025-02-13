@@ -9,11 +9,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-// import { Weekday } from '../interfaces/weekday.interface';
 import { Timerecords } from '../models/timerecords.class';
-import { MatNativeDateModule } from '@angular/material/core';
 import { DataStoreServiceService } from '../services/data-store-service.service';
-import { Subscription } from 'rxjs';
+import { LastRecordsComponent } from '../last-records/last-records.component';
+
 
 @Component({
   selector: 'app-main',
@@ -28,7 +27,8 @@ import { Subscription } from 'rxjs';
     MatIconModule,
     MatSelectModule,
     MatMenuModule,
-  ],
+    LastRecordsComponent
+],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
@@ -94,34 +94,12 @@ export class MainComponent {
   selectedDate: Date = new Date(); // Setzt heutiges Datum
   currentWeekday: Timerecords | null = null;
   calculationFinished: boolean = false;
-  allTimerecords: Timerecords[] = [];
-  //allTimerecords braucht kein $, weil es sich dabei um die konkreten Daten (ein normales Array) handelt und nicht um ein Observable.
+  
   constructor() {
     this.onDateChange(); // Initialize with current date
 
   }
 
-  ngOnInit() {
-    this.dataStoreService.getTimerecords();
-    this.dataStoreService.timerecords$.subscribe((changes) => {
-      console.log('Changes:', changes);
-      this.allTimerecords = changes.map(record => ({
-        ...record,
-        date: new Date(record.date)
-      }));
-      this.sortTimeRecords();
-    });
-  }
-
-
-  sortTimeRecords() {
-    this.allTimerecords.sort((a, b) => {
-      // ensures that each record's date is a Date object
-      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
-      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
-      return dateB.getTime() - dateA.getTime();
-    });
-  }
 
   safeDay(currentWeekday: Timerecords) {
     this.dataStoreService.safeData(currentWeekday);
@@ -170,7 +148,7 @@ export class MainComponent {
       weekday.timeWorked = 'Please enter both start and end times!';
       return;
     }
-    
+
     // Convert input and standard times to Date objects
     const start = new Date(`1970-01-01T${weekday.startTime}:00`);
     const end = new Date(`1970-01-01T${weekday.endTime}:00`);
