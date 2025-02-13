@@ -1,5 +1,6 @@
 <div class="content">
     <div class="wrapper">
+      
         <div class="time-tracker">
 
             <mat-form-field appearance="fill" subscriptSizing="dynamic">
@@ -22,7 +23,7 @@
                 <div class="time-row">
                     <mat-form-field appearance="fill" subscriptSizing="dynamic">
                         <mat-label>Startzeit</mat-label>
-                        <input matInput type="time" [(ngModel)]="currentWeekday.startTime" required>
+                        <input matInput type="time" [(ngModel)]="currentWeekday.startTime" (change)="setCalculationToFalse()" required>
                     </mat-form-field>
                     <button [matMenuTriggerFor]="startMenu" class="quick-select-btn">
                         <mat-icon>arrow_drop_down</mat-icon>
@@ -38,7 +39,7 @@
                 <div class="time-row">
                     <mat-form-field appearance="fill" subscriptSizing="dynamic">
                         <mat-label>Endzeit</mat-label>
-                        <input matInput type="time" [(ngModel)]="currentWeekday.endTime" required>
+                        <input matInput type="time" [(ngModel)]="currentWeekday.endTime" (change)="setCalculationToFalse()" required>
                     </mat-form-field>
                     <button [matMenuTriggerFor]="endMenu" class="quick-select-btn">
                         <mat-icon>arrow_drop_down</mat-icon>
@@ -67,7 +68,7 @@
                     </mat-menu>
                 </div>
                 <button mat-raised-button color="primary" (click)="calculateTime(currentWeekday)"
-                    [disabled]="!currentWeekday.startTime || !currentWeekday.endTime">
+                    [disabled]="!currentWeekday.startTime || !currentWeekday.endTime || currentWeekday.startTime > currentWeekday.endTime">
                     <!-- <mat-icon>calculate</mat-icon> -->
                     Arbeitszeit berechnen
                 </button>
@@ -101,19 +102,25 @@
 
 
         </div>
-        <div class="logs">
-            @for (entry of allTimerecords; track $index) {
-                <div class="logs">
-                    <span> {{entry.date | date:'dd.MM.yyyy' }}</span>
-                    <span>{{ entry.day }}</span>
-                    <span>{{ entry.startTime }} - {{ entry.endTime }}</span>
-                    <span>Break: {{ entry.breakMinutes }} minutes</span>
-                    <span>Time worked: {{ entry.timeWorked }}</span>
-                    <!-- <span>{{ entry.timeWithoutBreak }}</span> -->
-                     <br>
-                </div>
-          
-            }
+        <div class="logs-container">
+            <div class="move-container">
+                @for (entry of allTimerecords; track $index) {
+
+                    <div class="logs">
+                        <div class="logs-date">
+                            <span>{{ entry.day }} {{entry.date | date:'dd.MM.yyyy' }} </span>
+                            <span>{{ entry.startTime }} - {{ entry.endTime }} </span>
+                        </div>
+                        <div class="logs-hours">
+                            <span class="bold">{{ entry.timeWorked }}</span>
+                            <span>Break: {{ entry.breakMinutes }} minutes</span>
+                            <!-- <span>{{ entry.timeWithoutBreak }}</span> -->
+                        </div>
+                    </div>
+        
+                    }
+            </div>
+           
         </div>
     </div>
 </div>

@@ -124,7 +124,8 @@ export class MainComponent {
   }
 
   safeDay(currentWeekday: Timerecords) {
-    this.dataStoreService.safeData(currentWeekday)
+    this.dataStoreService.safeData(currentWeekday);
+    this.calculationFinished = false;
   }
 
   onDateChange() {
@@ -146,6 +147,9 @@ export class MainComponent {
     return day !== 0 && day !== 6;
   };
 
+  setCalculationToFalse(){
+    this.calculationFinished = false
+  }
   setStartTime(time: string, weekday: Timerecords) {
     weekday.startTime = time;
     this.calculationFinished = false;
@@ -166,7 +170,7 @@ export class MainComponent {
       weekday.timeWorked = 'Please enter both start and end times!';
       return;
     }
-
+    
     // Convert input and standard times to Date objects
     const start = new Date(`1970-01-01T${weekday.startTime}:00`);
     const end = new Date(`1970-01-01T${weekday.endTime}:00`);
