@@ -1,6 +1,6 @@
 <div class="content">
     <div class="wrapper">
-      
+
         <div class="time-tracker">
 
             <mat-form-field appearance="fill" subscriptSizing="dynamic">
@@ -23,7 +23,8 @@
                 <div class="time-row">
                     <mat-form-field appearance="fill" subscriptSizing="dynamic">
                         <mat-label>Startzeit</mat-label>
-                        <input matInput type="time" [(ngModel)]="currentWeekday.startTime" (change)="setCalculationToFalse()" required>
+                        <input matInput type="time" [(ngModel)]="currentWeekday.startTime"
+                            (change)="setCalculationToFalse()" required>
                     </mat-form-field>
                     <button [matMenuTriggerFor]="startMenu" class="quick-select-btn">
                         <mat-icon>arrow_drop_down</mat-icon>
@@ -39,7 +40,8 @@
                 <div class="time-row">
                     <mat-form-field appearance="fill" subscriptSizing="dynamic">
                         <mat-label>Endzeit</mat-label>
-                        <input matInput type="time" [(ngModel)]="currentWeekday.endTime" (change)="setCalculationToFalse()" required>
+                        <input matInput type="time" [(ngModel)]="currentWeekday.endTime"
+                            (change)="setCalculationToFalse()" required>
                     </mat-form-field>
                     <button [matMenuTriggerFor]="endMenu" class="quick-select-btn">
                         <mat-icon>arrow_drop_down</mat-icon>
@@ -55,7 +57,8 @@
                 <div class="time-row">
                     <mat-form-field appearance="fill" subscriptSizing="dynamic">
                         <mat-label>Dauer in Minuten</mat-label>
-                        <input matInput type="number" [(ngModel)]="currentWeekday.breakMinutes" (change)="setCalculationToFalse()" required>
+                        <input matInput type="number" [(ngModel)]="currentWeekday.breakMinutes"
+                            (change)="setCalculationToFalse()" required>
                     </mat-form-field>
                     <button [matMenuTriggerFor]="break" class="quick-select-btn">
                         <mat-icon>arrow_drop_down</mat-icon>
@@ -99,9 +102,16 @@
             }
             }
 
-
-
+           
         </div>
+        
         <app-last-records></app-last-records>
+
     </div>
 </div>
+
+<section class="toast" [class.is-visible]="isVisible">
+    <span>
+        Zeiten erfolgreich gespeichert
+    </span>
+</section>

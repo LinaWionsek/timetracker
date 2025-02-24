@@ -2,3 +2,29 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+$primary-color-blue: #3f51b5;
+$primary-box-shadow: 0px 6px 10px 0px #00000033;
+
+$font-size-14: 14px;
+$font-size-16: 16px;
+$font-size-18: 18px;
+$font-size-20: 20px;
+$font-size-24: 24px;
+$font-size-32: 32px;
+$font-size-40: 40px;
+$font-size-46: 46px;
+$font-size-64: 64px;
+$font-size-72: 72px;
+$font-size-128: 128px;
+$font-weight-300: 300;
+$font-weight-400: 400;
+$font-weight-500: 500;
+$font-weight-600: 600;
+$font-weight-700: 700;
+$desktop-full-hd: 1920px;
+$desktop-large: 1200px;
+$desktop: 960px;
+$tablet: 768px;
+$mobile-large: 640px;
+$mobile: 480px;

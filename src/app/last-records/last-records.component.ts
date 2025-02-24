@@ -18,7 +18,7 @@ export class LastRecordsComponent {
 
   allTimerecords: Timerecords[] = [];
   //allTimerecords braucht kein $, weil es sich dabei um die konkreten Daten (ein normales Array) handelt und nicht um ein Observable.
-
+  
 
   ngOnInit() {
     this.dataStoreService.getTimerecords();
@@ -31,11 +31,23 @@ export class LastRecordsComponent {
       }));
 
       this.sortTimeRecords();
+      this.allTimerecords = this.allTimerecords.slice(0, 5);
 
       const weeklyTotals = this.groupByWeek(this.allTimerecords);
       console.log('Wochensummen:', weeklyTotals);
     });
   }
+
+  sortTimeRecords() {
+    this.allTimerecords.sort((a, b) => {
+      // ensures that each record's date is a Date object
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }
+
+
 
   groupByWeek(records: Timerecords[]) {
     // Erstellt ein leeres Objekt, das als Schlüssel das Datum (als String) 
@@ -75,14 +87,6 @@ export class LastRecordsComponent {
     }));
   }
 
-  sortTimeRecords() {
-    this.allTimerecords.sort((a, b) => {
-      // ensures that each record's date is a Date object
-      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
-      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
-      return dateB.getTime() - dateA.getTime();
-    });
-  }
 
 
 

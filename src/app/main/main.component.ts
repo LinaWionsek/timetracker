@@ -28,7 +28,7 @@ import { LastRecordsComponent } from '../last-records/last-records.component';
     MatSelectModule,
     MatMenuModule,
     LastRecordsComponent
-],
+  ],
   templateUrl: './main.component.html',
   styleUrl: './main.component.scss'
 })
@@ -94,7 +94,11 @@ export class MainComponent {
   selectedDate: Date = new Date(); // Setzt heutiges Datum
   currentWeekday: Timerecords | null = null;
   calculationFinished: boolean = false;
-  
+
+  //toast
+  isVisible: boolean = false;
+  duration: number = 2000;
+
   constructor() {
     this.onDateChange(); // Initialize with current date
 
@@ -104,6 +108,15 @@ export class MainComponent {
   safeDay(currentWeekday: Timerecords) {
     this.dataStoreService.safeData(currentWeekday);
     this.calculationFinished = false;
+    this.showToast()
+  }
+
+  showToast() {
+    this.isVisible = true;
+    this.duration = 2000;
+    setTimeout(() => {
+      this.isVisible = false;
+    }, this.duration || 2000);
   }
 
   onDateChange() {
@@ -125,7 +138,7 @@ export class MainComponent {
     return day !== 0 && day !== 6;
   };
 
-  setCalculationToFalse(){
+  setCalculationToFalse() {
     this.calculationFinished = false
   }
   setStartTime(time: string, weekday: Timerecords) {
@@ -179,5 +192,7 @@ export class MainComponent {
 
     this.calculationFinished = true;
   }
+
+
 
 }
