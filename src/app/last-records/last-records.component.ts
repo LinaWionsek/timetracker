@@ -25,13 +25,24 @@ export class LastRecordsComponent {
     this.dataStoreService.timerecords$.subscribe((changes) => {
       console.log('Changes:', changes);
 
-      this.allTimerecords = changes.map(record => ({
-        ...record,
-        date: new Date(record.date)
-      }));
+      // this.allTimerecords = changes.map(record => ({
+      //   ...record,
+      //   date: new Date(record.date),
+      //   createdAt: new Date(record.createdAt)
+      // }));
+
+      this.allTimerecords = changes.map(record => 
+        Timerecords.fromJSON({
+          ...record,
+          date: typeof record.date === 'number' ? record.date : Number(record.date),
+          createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
+        })
+      );
+     
 
       this.sortTimeRecords();
-      this.allTimerecords = this.allTimerecords.slice(0, 5);
+      // Zeigt nur die ersten 5 Einträge an (schon sortiert durch sortTimeRecords)
+      // this.allTimerecords = this.allTimerecords.slice(0, 5);
 
       const weeklyTotals = this.groupByWeek(this.allTimerecords);
       console.log('Wochensummen:', weeklyTotals);
@@ -39,50 +50,39 @@ export class LastRecordsComponent {
   }
 
   sortTimeRecords() {
-    this.allTimerecords.sort((a, b) => {
-      // ensures that each record's date is a Date object
-      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
-      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
-      return dateB.getTime() - dateA.getTime();
-    });
+    this.allTimerecords.sort((a, b) => b.date - a.date);
+  
+
+    // this.allTimerecords.sort((a, b) => {
+    //   // ensures that each record's date is a Date object
+    //   const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+    //   const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+    //   return dateB.getTime() - dateA.getTime();
+    // });
+  
   }
 
 
-
   groupByWeek(records: Timerecords[]) {
-    // Erstellt ein leeres Objekt, das als Schlüssel das Datum (als String) 
-    // und als Wert die Gesamtminuten (als Number) speichert
+  
     const weeks: { [key: string]: number } = {};
 
     records.forEach(record => {
-      // Findet den Montag der Woche für das aktuelle Datum
+      // Konvertiere Timestamp zu Date für date-fns Funktionen
       const weekStart = startOfWeek(new Date(record.date), { weekStartsOn: 1 });
-      // Formatiert dieses Datum als String (z.B. "2024-02-12")
       const weekKey = format(weekStart, 'yyyy-MM-dd');
 
-      // Berechnung der Minuten
       let minutes = record.totalMinutes;
-      // Falls keine totalMinutes vorhanden sind, aber timeWorked (z.B. "8:30")
       if (!minutes && record.timeWorked) {
-        // Spaltet "8:30" in [8, 30] auf und wandelt in Zahlen um
         const [hours, mins] = record.timeWorked.split(':').map(Number);
-        // Rechnet Stunden in Minuten um und addiert die Minuten
         minutes = hours * 60 + mins;
       }
-      // Addiert die Minuten zur entsprechenden Woche
-      // || 0 bedeutet: falls weeks[weekKey] noch nicht existiert, starte bei 0
       weeks[weekKey] = (weeks[weekKey] || 0) + (minutes || 0);
     });
-    // Wandelt das weeks-Objekt in ein Array von Wochen-Zusammenfassungen um
+
     return Object.entries(weeks).map(([date, minutes]) => ({
-      // Formatiert das Start-Datum schön (z.B. "12.02.2024")
       weekStart: format(new Date(date), 'dd.MM.yyyy'),
-      // Berechnet und formatiert das End-Datum (Sonntag) der Woche
       weekEnd: format(endOfWeek(new Date(date), { weekStartsOn: 1 }), 'dd.MM.yyyy'),
-      // Wandelt die Gesamtminuten in ein "Stunden:Minuten" Format um
-      // Math.floor(minutes / 60) gibt die vollen Stunden
-      // minutes % 60 gibt die übrigen Minuten
-      // padStart(2, '0') fügt führende Nullen hinzu, falls nötig
       totalHours: `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`
     }));
   }

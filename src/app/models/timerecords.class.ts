@@ -3,46 +3,51 @@ import { startOfWeek, format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 export class Timerecords {
-    date: Date | string;
-    day: string;
-    startTime: string;
-    endTime: string;
-    timeWorked?: string;
-    timeWithoutBreak?: string;
-    breakMinutes: number;
-    totalMinutes?: number
 
-    constructor(data: timeRecords) {
-        this.date = data.date ? new Date(data.date) : '';
-        this.day = data?.day ?? '';
-        this.startTime = data?.startTime ?? '';
-        this.endTime = data?.endTime ?? '';
-        this.timeWorked = data?.timeWorked ?? '';
-        this.timeWithoutBreak = data?.timeWithoutBreak ?? '';
-        this.breakMinutes = data?.breakMinutes ?? 0;
-        this.totalMinutes = data?.totalMinutes ?? 0;
+    constructor(
+        public date: number = Date.now(),
+        public day: string = '',
+        public startTime: string = '',
+        public endTime: string = '',
+        public timeWorked: string = '',
+        public timeWithoutBreak: string = '',
+        public breakMinutes: number = 0,
+        public totalMinutes: number = 0,
+        public createdBy: string = 'Dummy User',
+        public createdAt: number = Date.now()
+    ) { }
+
+    static fromJSON(obj: any): Timerecords {
+        return new Timerecords(
+            typeof obj.date === 'number' ? obj.date : Number(obj.date),
+            obj.day || '',
+            obj.startTime || '',
+            obj.endTime || '',
+            obj.timeWorked || '',
+            obj.timeWithoutBreak || '',
+            obj.breakMinutes || 0,
+            obj.totalMinutes || 0,
+            obj.createdBy || 'Dummy User',
+            typeof obj.createdAt === 'number' ? obj.createdAt : Date.now()
+        );
     }
-    
-    // static groupByWeek(records: Timerecords[]) {
-    //     const weeks: { [key: string]: number } = {};
-        
-    //     records.forEach(record => {
-    //         const weekStart = startOfWeek(new Date(record.date), { weekStartsOn: 1 });
-    //         const weekKey = format(weekStart, 'yyyy-MM-dd');
-            
-    //         weeks[weekKey] = (weeks[weekKey] || 0) + (record.totalMinutes || 0);
-    //     });
 
-    //     return Object.entries(weeks).map(([date, minutes]) => ({
-    //         weekStart: date,
-    //         totalHours: `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`
-    //     }));
-    // }
+    /** 
+     * Konvertiert die Instanz in ein Plain Object für Firebase
+     */
+    toJSON() {
+        return {
+            date: this.date,
+            day: this.day,
+            startTime: this.startTime,
+            endTime: this.endTime,
+            timeWorked: this.timeWorked,
+            timeWithoutBreak: this.timeWithoutBreak,
+            breakMinutes: this.breakMinutes,
+            totalMinutes: this.totalMinutes,
+            createdBy: this.createdBy,
+            createdAt: this.createdAt
+        };
+    }
+
 }
-
-
-// toPlainObject(){
-//     return {
-//         day: this.day,
-//     }
-// }

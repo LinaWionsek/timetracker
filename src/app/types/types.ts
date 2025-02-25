@@ -10,7 +10,7 @@ export type userData = {
   };
 
  export type timeRecords = {
-    date: string;
+    date: number;
     day: string;
     startTime: string;
     endTime: string;
@@ -18,6 +18,8 @@ export type userData = {
     timeWithoutBreak?: string;
     breakMinutes: number;
     totalMinutes?: number
+    createdBy: string;
+    createdAt: number;
  } 
   
   export type channelData = {

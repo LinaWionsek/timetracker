@@ -29,13 +29,11 @@ export class DataStoreServiceService {
   constructor() { }
 
 
-
   async safeData(daten: Timerecords) {
-    await addDoc(collection(this.firestore, 'timerecords'), daten)
-      .catch((err) => { console.log(err) })
-      .then((docRef) => { { console.log('Document written with ID: ', docRef?.id); }});
-  }
-
+    await addDoc(collection(this.firestore, 'timerecords'), daten.toJSON())
+        .catch((err) => { console.log(err) })
+        .then((docRef) => { console.log('Document written with ID: ', docRef?.id); });
+}
 
   getTimerecords() {
     const timerecordsCollection = collection(this.firestore, 'timerecords');

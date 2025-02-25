@@ -37,62 +37,14 @@ export class MainComponent {
   dataStoreService = inject(DataStoreServiceService);
 
   // Standard working hours for each weekday
-  timerecords: Timerecords[] = [
-    {
-      date: '',
-      day: 'Monday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-    {
-      date: '',
-      day: 'Tuesday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-    {
-      date: '',
-      day: 'Wednesday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-    {
-      date: '',
-      day: 'Thursday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-    {
-      date: '',
-      day: 'Friday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-    {
-      date: '',
-      day: 'Saturday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-    {
-      date: '',
-      day: 'Sunday',
-      startTime: '',
-      endTime: '',
-      breakMinutes: 0,
-    },
-  ];
+
+
 
   startTime: string | null = null;
   endTime: string | null = null;
   selectedDate: Date = new Date(); // Setzt heutiges Datum
-  currentWeekday: Timerecords | null = null;
+  // currentWeekday: Timerecords | null = null;
+  record: Timerecords = new Timerecords();
   calculationFinished: boolean = false;
 
   //toast
@@ -100,15 +52,23 @@ export class MainComponent {
   duration: number = 2000;
 
   constructor() {
+    // console.log(this.timerecords, 'timerecords')
     this.onDateChange(); // Initialize with current date
 
   }
 
 
-  safeDay(currentWeekday: Timerecords) {
-    this.dataStoreService.safeData(currentWeekday);
-    this.calculationFinished = false;
-    this.showToast()
+  timerecords: Timerecords[] = [
+    new Timerecords()
+  ];
+
+  safeDay() {
+    console.log(this.record, 'currentWeekday')
+    if (this.record) {
+      this.dataStoreService.safeData(this.record);
+      this.calculationFinished = false;
+      this.showToast()
+    }
   }
 
   showToast() {
@@ -120,57 +80,57 @@ export class MainComponent {
   }
 
   onDateChange() {
-    if (this.selectedDate) {
-      const dayIndex = this.selectedDate.getDay();
-      // Konvertiere von Sonntag=0 zu Montag=0
-      const adjustedIndex = dayIndex === 0 ? 6 : dayIndex - 1;
-      // Kopiere den Wochentag und setze das neue Datum
-      const dateString = this.selectedDate.toISOString();
-      this.currentWeekday = { ...this.timerecords[adjustedIndex], date: dateString };
+    console.log(this.record, 'currentWeekday')
+    console.log(this.selectedDate, 'selectedDate')
 
 
-    }
+    this.record = new Timerecords(
+      this.selectedDate.getTime(), // Unix Timestamp vom ausgewählten Datum
+      format(this.selectedDate, 'EEEE')
+    );
+    this.calculationFinished = false;
+
   }
 
-  dateFilter = (date: Date | null): boolean => {
-    const day = (date || new Date()).getDay();
-    // 0 = Sonntag, 6 = Samstag
-    return day !== 0 && day !== 6;
-  };
+  // dateFilter = (date: Date | null): boolean => {
+  //   const day = (date || new Date()).getDay();
+  //   // 0 = Sonntag, 6 = Samstag
+  //   return day !== 0 && day !== 6;
+  // };
 
   setCalculationToFalse() {
     this.calculationFinished = false
   }
-  setStartTime(time: string, weekday: Timerecords) {
-    weekday.startTime = time;
+  setStartTime(time: string) {
+    this.record.startTime = time;
     this.calculationFinished = false;
   }
 
-  setEndTime(time: string, weekday: Timerecords) {
-    weekday.endTime = time;
+  setEndTime(time: string) {
+    this.record.endTime = time;
     this.calculationFinished = false;
   }
 
-  setBreak(duration: number, weekday: Timerecords) {
-    weekday.breakMinutes = duration;
+  setBreak(duration: number) {
+    this.record.breakMinutes = duration;
     this.calculationFinished = false;
   }
 
-  calculateTime(weekday: Timerecords) {
-    if (!weekday.startTime || !weekday.endTime) {
-      weekday.timeWorked = 'Please enter both start and end times!';
+  calculateTime() {
+    if (!this.record.startTime || !this.record.endTime) {
+      this.record.timeWorked = 'Please enter both start and end times!';
       return;
     }
 
     // Convert input and standard times to Date objects
-    const start = new Date(`1970-01-01T${weekday.startTime}:00`);
-    const end = new Date(`1970-01-01T${weekday.endTime}:00`);
+    const start = new Date(`1970-01-01T${this.record.startTime}:00`);
+    const end = new Date(`1970-01-01T${this.record.endTime}:00`);
 
     // Calculate total working time in minutes
     const workingTimeInMinutes = differenceInMinutes(end, start);
 
     if (workingTimeInMinutes < 0) {
-      weekday.timeWorked = 'End time cannot be earlier than start time!';
+      this.record.timeWorked = 'End time cannot be earlier than start time!';
       return;
     }
 
@@ -178,17 +138,17 @@ export class MainComponent {
     // Convert working time to hours and minutes
     const whours = Math.floor(timeWithoutBreak / 60);
     const wminutes = timeWithoutBreak % 60;
-    weekday.timeWithoutBreak = `${whours} hours and ${wminutes} minutes`;
+    this.record.timeWithoutBreak = `${whours} hours and ${wminutes} minutes`;
     // weekday.totalMinutes = timeWithoutBreak;
 
 
-    const actualWorkingTime = workingTimeInMinutes - (weekday.breakMinutes || 0);
+    const actualWorkingTime = workingTimeInMinutes - (this.record.breakMinutes || 0);
 
     // Convert working time to hours and minutes
     const thours = Math.floor(actualWorkingTime / 60);
     const tminutes = actualWorkingTime % 60;
-    weekday.timeWorked = `${thours} hours and ${tminutes} minutes`;
-    weekday.totalMinutes = actualWorkingTime;
+    this.record.timeWorked = `${thours} hours and ${tminutes} minutes`;
+    this.record.totalMinutes = actualWorkingTime;
 
     this.calculationFinished = true;
   }
