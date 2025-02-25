@@ -83,11 +83,12 @@ export class MainComponent {
     console.log(this.record, 'currentWeekday')
     console.log(this.selectedDate, 'selectedDate')
 
-
-    this.record = new Timerecords(
-      this.selectedDate.getTime(), // Unix Timestamp vom ausgewählten Datum
-      format(this.selectedDate, 'EEEE')
-    );
+    this.record = new Timerecords({
+      date: this.selectedDate.getTime(),
+      day: format(this.selectedDate, 'EEEE')
+  });
+  
+  this.calculationFinished = false;
     this.calculationFinished = false;
 
   }

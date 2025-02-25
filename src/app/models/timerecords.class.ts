@@ -1,35 +1,43 @@
-import { timeRecords } from './../../app/types/types';
-import { startOfWeek, format } from 'date-fns';
-import { de } from 'date-fns/locale';
 
 export class Timerecords {
 
-    constructor(
-        public date: number = Date.now(),
-        public day: string = '',
-        public startTime: string = '',
-        public endTime: string = '',
-        public timeWorked: string = '',
-        public timeWithoutBreak: string = '',
-        public breakMinutes: number = 0,
-        public totalMinutes: number = 0,
-        public createdBy: string = 'Dummy User',
-        public createdAt: number = Date.now()
-    ) { }
+    public date: number;
+    public day: string;
+    public startTime: string;
+    public endTime: string;
+    public timeWorked: string;
+    public timeWithoutBreak: string;
+    public breakMinutes: number;
+    public totalMinutes: number;
+    public createdBy: string;
+    public createdAt: number;
+    
+    constructor(init?: Partial<Timerecords>) {
+        this.date = init?.date || Date.now();
+        this.day = init?.day || '';
+        this.startTime = init?.startTime || '';
+        this.endTime = init?.endTime || '';
+        this.timeWorked = init?.timeWorked || '';
+        this.timeWithoutBreak = init?.timeWithoutBreak || '';
+        this.breakMinutes = init?.breakMinutes || 0;
+        this.totalMinutes = init?.totalMinutes || 0;
+        this.createdBy = init?.createdBy || 'Dummy User';
+        this.createdAt = init?.createdAt || Date.now();
+    }
 
     static fromJSON(obj: any): Timerecords {
-        return new Timerecords(
-            typeof obj.date === 'number' ? obj.date : Number(obj.date),
-            obj.day || '',
-            obj.startTime || '',
-            obj.endTime || '',
-            obj.timeWorked || '',
-            obj.timeWithoutBreak || '',
-            obj.breakMinutes || 0,
-            obj.totalMinutes || 0,
-            obj.createdBy || 'Dummy User',
-            typeof obj.createdAt === 'number' ? obj.createdAt : Date.now()
-        );
+        return new Timerecords({
+            date: typeof obj.date === 'number' ? obj.date : Number(obj.date),
+            day: obj.day || '',
+            startTime: obj.startTime || '',
+            endTime: obj.endTime || '',
+            timeWorked: obj.timeWorked || '',
+            timeWithoutBreak: obj.timeWithoutBreak || '',
+            breakMinutes: obj.breakMinutes || 0,
+            totalMinutes: obj.totalMinutes || 0,
+            createdBy: obj.createdBy || 'Dummy User',
+            createdAt: typeof obj.createdAt === 'number' ? obj.createdAt : Date.now()
+        });
     }
 
     /** 
