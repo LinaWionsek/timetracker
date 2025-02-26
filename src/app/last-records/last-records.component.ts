@@ -25,12 +25,6 @@ export class LastRecordsComponent {
     this.dataStoreService.timerecords$.subscribe((changes) => {
       console.log('Changes:', changes);
 
-      // this.allTimerecords = changes.map(record => ({
-      //   ...record,
-      //   date: new Date(record.date),
-      //   createdAt: new Date(record.createdAt)
-      // }));
-
       this.allTimerecords = changes.map(record => 
         Timerecords.fromJSON({
           ...record,
@@ -42,7 +36,7 @@ export class LastRecordsComponent {
 
       this.sortTimeRecords();
       // Zeigt nur die ersten 5 Einträge an (schon sortiert durch sortTimeRecords)
-      // this.allTimerecords = this.allTimerecords.slice(0, 5);
+      this.allTimerecords = this.allTimerecords.slice(0, 5);
 
       const weeklyTotals = this.groupByWeek(this.allTimerecords);
       console.log('Wochensummen:', weeklyTotals);
@@ -51,15 +45,6 @@ export class LastRecordsComponent {
 
   sortTimeRecords() {
     this.allTimerecords.sort((a, b) => b.date - a.date);
-  
-
-    // this.allTimerecords.sort((a, b) => {
-    //   // ensures that each record's date is a Date object
-    //   const dateA = a.date instanceof Date ? a.date : new Date(a.date);
-    //   const dateB = b.date instanceof Date ? b.date : new Date(b.date);
-    //   return dateB.getTime() - dateA.getTime();
-    // });
-  
   }
 
 

@@ -36,3 +36,9 @@
     font-weight: 500;
   }
   
+  .logs-info {
+    @include display-flex($jc: space-between, $ai: flex-start);
+    @include size($width: 100%);
+    font-size: 12px;
+    font-weight: 400;
+  }

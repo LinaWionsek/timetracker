@@ -44,7 +44,8 @@ export class MainComponent {
   endTime: string | null = null;
   selectedDate: Date = new Date(); // Setzt heutiges Datum
   // currentWeekday: Timerecords | null = null;
-  record: Timerecords = new Timerecords();
+  // record: Timerecords = new Timerecords();
+  record!: Timerecords;
   calculationFinished: boolean = false;
 
   //toast
@@ -52,11 +53,8 @@ export class MainComponent {
   duration: number = 2000;
 
   constructor() {
-    // console.log(this.timerecords, 'timerecords')
     this.onDateChange(); // Initialize with current date
-
   }
-
 
   timerecords: Timerecords[] = [
     new Timerecords()
@@ -80,9 +78,7 @@ export class MainComponent {
   }
 
   onDateChange() {
-    console.log(this.record, 'currentWeekday')
-    console.log(this.selectedDate, 'selectedDate')
-
+  
     this.record = new Timerecords({
       date: this.selectedDate.getTime(),
       day: format(this.selectedDate, 'EEEE')
@@ -93,15 +89,11 @@ export class MainComponent {
 
   }
 
-  // dateFilter = (date: Date | null): boolean => {
-  //   const day = (date || new Date()).getDay();
-  //   // 0 = Sonntag, 6 = Samstag
-  //   return day !== 0 && day !== 6;
-  // };
 
   setCalculationToFalse() {
     this.calculationFinished = false
   }
+  
   setStartTime(time: string) {
     this.record.startTime = time;
     this.calculationFinished = false;
