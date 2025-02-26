@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Timerecords } from '../models/timerecords.class';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { startOfWeek, format, endOfWeek } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { MatIconModule } from '@angular/material/icon';
+
+
 
 @Component({
   selector: 'app-last-records',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './last-records.component.html',
   styleUrl: './last-records.component.scss'
 })
