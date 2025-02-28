@@ -1,49 +1,120 @@
+import { CommonModule, Time } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
 
-import {MatCardModule} from '@angular/material/card';
-
-
-import {LiveAnnouncer} from '@angular/cdk/a11y';
-import {AfterViewInit, Component, ViewChild, inject} from '@angular/core';
-import {MatSort, Sort, MatSortModule} from '@angular/material/sort';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
-
-interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
+import { Timerecords } from '../models/timerecords.class';
+import { DataStoreServiceService } from '../services/data-store-service.service';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { startOfWeek, format, endOfWeek } from 'date-fns';
 
 @Component({
   selector: 'app-time-logs',
   standalone: true,
-  imports: [MatCardModule, MatTableModule, MatSortModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule],
   templateUrl: './time-logs.component.html',
   styleUrl: './time-logs.component.scss'
 })
-export class TimeLogsComponent implements AfterViewInit {
+export class TimeLogsComponent {
   private _liveAnnouncer = inject(LiveAnnouncer);
+  dataStoreService = inject(DataStoreServiceService);
+  allTimerecords: Timerecords[] = [];
+  displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at'];
 
-  displayedColumns: string[] = ['date', 'timestamp', 'break'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
+  weeklyDisplayedColumns: string[] = ['weekRange', 'totalHours'];
+  weeklyDataSource = new MatTableDataSource<any>([]);
 
-  @ViewChild(MatSort) sort!: MatSort;
+
+  dataSource = new MatTableDataSource(this.allTimerecords);
+
+  @ViewChild('detailSort') detailSort!: MatSort;
+  @ViewChild('weeklySort') weeklySort!: MatSort;
+
+
+  ngOnInit() {
+    this.dataStoreService.getTimerecords();
+    this.dataStoreService.timerecords$.subscribe((changes) => {
+      console.log('Changes:', changes);
+
+      this.allTimerecords = changes.map(record =>
+        Timerecords.fromJSON({
+          ...record,
+          date: typeof record.date === 'number' ? record.date : Number(record.date),
+          createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
+        })
+      );
+
+      this.dataSource.data = this.allTimerecords;
+      // this.sortTimeRecords();
+      // Zeigt nur die ersten 5 Einträge an (schon sortiert durch sortTimeRecords)
+      // this.allTimerecords = this.allTimerecords.slice(0, 5);
+
+      const weeklyTotals = this.groupByWeek(this.allTimerecords);
+      this.weeklyDataSource.data = weeklyTotals;
+      console.log('Wochensummen:', weeklyTotals);
+    });
+  }
+
+  sortTimeRecords() {
+    this.allTimerecords.sort((a, b) => b.date - a.date);
+  }
+  groupByWeek(records: Timerecords[]) {
+
+    const weeks: { [key: string]: number } = {};
+
+    records.forEach(record => {
+      // Konvertiere Timestamp zu Date für date-fns Funktionen
+      const weekStart = startOfWeek(new Date(record.date), { weekStartsOn: 1 });
+      const weekKey = format(weekStart, 'yyyy-MM-dd');
+
+      let minutes = record.totalMinutes;
+      if (!minutes && record.timeWorked) {
+        const [hours, mins] = record.timeWorked.split(':').map(Number);
+        minutes = hours * 60 + mins;
+      }
+      weeks[weekKey] = (weeks[weekKey] || 0) + (minutes || 0);
+    });
+
+    return Object.entries(weeks).map(([date, minutes]) => ({
+      weekStart: format(new Date(date), 'dd.MM.yyyy'),
+      weekEnd: format(endOfWeek(new Date(date), { weekStartsOn: 1 }), 'dd.MM.yyyy'),
+      totalHours: `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`
+    }));
+  }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.detailSort;
+    this.weeklyDataSource.sort = this.weeklySort;
+
+
+    this.weeklyDataSource.sortingDataAccessor = (item, property) => {
+      if (property === 'weekRange') {
+        // Konvertiert dd.MM.yyyy zu yyyy-MM-dd für korrekte String-Sortierung
+        const [day, month, year] = item.weekStart.split('.');
+        return `${year}-${month}-${day}`;
+      }
+      return item[property];
+    };
+    // Optional: Eigene Sort-Funktionen definieren
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'date':
+          return item.date;
+        case 'time':
+          return item.startTime;
+        case 'break':
+          return item.breakMinutes;
+        case 'duration':
+          return item.timeWorked;
+        case 'by':
+          return item.createdBy;
+        case 'at':
+          return item.createdAt;
+        default:
+          return (item as any)[property];
+      }
+    };
   }
 
   /** Announce the change in sort state for assistive technology. */
@@ -54,4 +125,6 @@ export class TimeLogsComponent implements AfterViewInit {
       this._liveAnnouncer.announce('Sorting cleared');
     }
   }
+
+
 }

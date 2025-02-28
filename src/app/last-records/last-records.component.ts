@@ -25,7 +25,7 @@ export class LastRecordsComponent {
   ngOnInit() {
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
-      console.log('Changes:', changes);
+      console.log('test:', changes);
 
       this.allTimerecords = changes.map(record => 
         Timerecords.fromJSON({
@@ -36,7 +36,7 @@ export class LastRecordsComponent {
       );
      
 
-      this.sortTimeRecords();
+      // this.sortTimeRecords();
       // Zeigt nur die ersten 5 Einträge an (schon sortiert durch sortTimeRecords)
       this.allTimerecords = this.allTimerecords.slice(0, 5);
 
