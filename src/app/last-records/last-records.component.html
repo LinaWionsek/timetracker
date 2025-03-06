@@ -6,7 +6,7 @@
 
             <div class="logs-date">
                 <span>{{ entry.day }} {{entry.date | date:'dd.MM.yyyy' }} </span>
-                <button class="edit-btn">
+                <button (click)="edit(entry)" class="edit-btn">
                     <mat-icon>edit</mat-icon>
                 </button>
 

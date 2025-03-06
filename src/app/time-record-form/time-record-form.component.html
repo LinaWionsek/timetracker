@@ -1,1 +1,111 @@
-<p>time-record-form works!</p>
+<div class="content">
+    <div class="time-tracker">
+
+        <h1> {{ isEditMode ? 'Edit' : 'New Entry' }}</h1>
+        <!-- Datum -->
+        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+            <mat-label>Wähle ein Datum</mat-label>
+            <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="onDateChange()"
+                required />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <div class="weekday-container">
+            <div class="day-box">
+                <div class="day">
+                    <span>{{ record.day }}</span>
+                    <span>{{ selectedDate | date:'dd.MM.yyyy' }}</span>
+                </div>
+            </div>
+
+            <!-- Startzeit -->
+            <div class="time-row">
+                <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                    <mat-label>Startzeit</mat-label>
+                    <input matInput type="time" [(ngModel)]="record.startTime" (change)="setCalculationToFalse()"
+                        required />
+                </mat-form-field>
+                <button [matMenuTriggerFor]="startMenu" class="quick-select-btn">
+                    <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #startMenu="matMenu">
+                    <button mat-menu-item *ngFor="let time of dataStoreService.startQuickTimes"
+                        (click)="setStartTime(time)">
+                        {{ time }}
+                    </button>
+                </mat-menu>
+            </div>
+
+            <!-- Endzeit -->
+            <div class="time-row">
+                <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                    <mat-label>Endzeit</mat-label>
+                    <input matInput type="time" [(ngModel)]="record.endTime" (change)="setCalculationToFalse()"
+                        required />
+                </mat-form-field>
+                <button [matMenuTriggerFor]="endMenu" class="quick-select-btn">
+                    <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #endMenu="matMenu">
+                    <button mat-menu-item *ngFor="let time of dataStoreService.endQuickTimes"
+                        (click)="setEndTime(time)">
+                        {{ time }}
+                    </button>
+                </mat-menu>
+            </div>
+
+            <!-- Pause -->
+            <div class="time-row">
+                <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                    <mat-label>Dauer in Minuten (Pause)</mat-label>
+                    <input matInput type="number" [(ngModel)]="record.breakMinutes"
+                        (change)="setCalculationToFalse()" />
+                </mat-form-field>
+                <button [matMenuTriggerFor]="break" class="quick-select-btn">
+                    <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                <mat-menu #break="matMenu">
+                    <button mat-menu-item *ngFor="let minutes of dataStoreService.breakDurations"
+                        (click)="setBreak(minutes)">
+                        {{ minutes }}
+                    </button>
+                </mat-menu>
+            </div>
+
+            <!-- Button: Zeit berechnen -->
+            <button mat-raised-button color="primary" (click)="calculateTime()"
+                [disabled]="!record.startTime || !record.endTime || record.startTime > record.endTime">
+                Arbeitszeit berechnen
+            </button>
+
+            <!-- Anzeige des Ergebnisses -->
+            <div class="result" *ngIf="calculationFinished && record.timeWorked">
+                <div class="time-diff-container">
+                    <span class="time-diff">{{ record.timeWorked }}</span>
+                    <span class="comparing-diff" *ngIf="record.breakMinutes > 0">
+                        ({{ record.timeWithoutBreak }} ohne Pause)
+                    </span>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Speichern-/Updaten-Button -->
+        <div class="submit-container">
+            <button mat-raised-button color="primary" (click)="onSaveClick()"
+                [disabled]="!record.startTime || !record.endTime || !calculationFinished">
+                {{ isEditMode ? 'Update' : 'Save' }}
+            </button>
+            @if (isEditMode) {
+            <button (click)="closeDialog()" mat-raised-button color="primary">Cancel</button>
+            }
+        </div>
+    </div>
+
+    <!-- Einfacher Toast -->
+    <section class="toast" [class.is-visible]="isVisible">
+        <span>Zeiten erfolgreich gespeichert</span>
+    </section>
+</div>

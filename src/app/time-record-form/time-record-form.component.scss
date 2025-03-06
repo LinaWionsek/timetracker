@@ -1,0 +1,182 @@
+@import "./../../mixins.scss";
+@import "./../../styles";
+
+
+.day {
+  @include display-flex($jc: space-between);
+  width: 100%;
+  gap: 8px;
+  span {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.datepicker {
+  padding-left: 0;
+}
+
+
+.content {
+  @include display-flex($ai: flex-start);
+  @include size(100%, 100%);
+  // padding: 64px;
+  // background-color: #f1f4fe;
+}
+
+.time-tracker {
+  @include display-flex($fd: column, $jc: flex-start, $gap: 8px);
+  background-color: #ffffff;
+  padding: 32px 16px;
+  height: 600px;
+  width: 330px;
+  border-radius: 4px;
+}
+
+.weekday-container {
+  @include display-flex($fd: column, $ai: flex-start, $gap: 16px);
+  background-color: #ffffff;
+  margin-top: 8px;
+  // border: 1px solid rgba(0, 0, 0, 0.12);
+  // border-radius: 4px;
+  // height: 80px;
+}
+
+.day-box {
+  @include display-flex($fd: column);
+  // @include size(310px, 100%);
+  margin: 0 16px;
+}
+
+.time-row {
+  @include display-flex();
+  background-color: #f5f5f5;
+  width: 100%;
+
+  mat-form-field {
+    min-width: 120px;
+  }
+
+  button {
+    background-color: #f5f5f5;
+    border: none;
+    border-bottom: 1px solid gray;
+    border-radius: unset;
+    height: 56px;
+    width: 56px;
+    &:hover {
+      cursor: pointer;
+      border-color: black;
+      background-color: #ecececec;
+    }
+    img {
+      border-radius: 0px;
+    }
+  }
+}
+
+.quick-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+
+  button {
+    min-width: 70px;
+    padding: 0 12px;
+    height: 36px;
+
+    &.selected {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+      color: #1976d2;
+    }
+  }
+}
+
+.result {
+  @include size(100%);
+  background-color: #ffffff;
+  // padding: 16px;
+  // border-radius: 4px;
+  // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.time-diff-container {
+  @include display-flex($fd: column, $ai: flex-start);
+//   height: 50px;
+  border-radius: 4px;
+  padding: 4px;
+  background-color: hsl(206deg 100% 73.3% / 26%);
+  margin: 0;
+}
+
+.time-diff {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.comparing-diff {
+  font-size: 14px;
+}
+
+.deviation {
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+  padding: 4px;
+  font-size: 14px;
+
+  &.positive {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.negative {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+
+
+
+.toast {
+  @include position(fixed, 85%, 50%, $zi: 4);
+  @include font-style($font-size-24, $font-weight-500, white);
+  transform: translate(5000%, -50%);
+  padding: 36px;
+  border-radius: 4px;
+  background: $primary-color-blue;
+  box-shadow: $primary-box-shadow;
+  max-width: 80%;
+  transition: 225ms ease-in-out;
+  text-align: center;
+}
+
+.toast.is-visible {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .content {
+    @include display-flex($fd: column, $jc: flex-start);
+  }
+
+}
+
+@media (max-width: 600px) {
+  .content {
+    @include display-flex($fd: column, $jc: flex-start);
+  }
+
+
+  .weekday-container {
+    @include display-flex($fd: column, $ai: flex-start, $gap: 16px);
+    @include size($height: 100%);
+  }
+
+  .day-box {
+    margin-right: 0px;
+  }
+}

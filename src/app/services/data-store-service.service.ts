@@ -40,7 +40,10 @@ export class DataStoreServiceService {
     this.timerecords$ = collectionData(timerecordsCollection, { idField: 'id' }) as Observable<Timerecords[]>;
     return this.timerecords$;
   }
-
+  async updateData(daten: Timerecords) {
+    const docRef = doc(this.firestore, 'timerecords', daten.id);
+    await updateDoc(docRef, daten.toJSON()).catch((err) => { console.log(err) });
+  }
 
   async findByDate(searchDate: Date) {
     const dateString = searchDate.toISOString();

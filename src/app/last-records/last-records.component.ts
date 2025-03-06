@@ -4,7 +4,8 @@ import { Timerecords } from '../models/timerecords.class';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { startOfWeek, format, endOfWeek } from 'date-fns';
 import { MatIconModule } from '@angular/material/icon';
-
+import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -15,9 +16,9 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './last-records.component.scss'
 })
 export class LastRecordsComponent {
-
+  dialog = inject(MatDialog);
   dataStoreService = inject(DataStoreServiceService);
-
+  timerecord!: Timerecords;
   allTimerecords: Timerecords[] = [];
   //allTimerecords braucht kein $, weil es sich dabei um die konkreten Daten (ein normales Array) handelt und nicht um ein Observable.
   
@@ -60,6 +61,11 @@ export class LastRecordsComponent {
         console.error('Fehler bei der Verarbeitung:', error);
       }
     });
+  }
+
+  edit(timerecord: Timerecords) {
+    const dialog = this.dialog.open(DialogEditRecordComponent);
+    dialog.componentInstance.timerecord = new Timerecords(timerecord);
   }
 
   sortTimeRecords() {
