@@ -1,6 +1,6 @@
 
 export class Timerecords {
-
+    public id: string;
     public date: number;
     public day: string;
     public startTime: string;
@@ -13,6 +13,7 @@ export class Timerecords {
     public createdAt: number;
     
     constructor(init?: Partial<Timerecords>) {
+        this.id = init?.id || '';
         this.date = init?.date || Date.now();
         this.day = init?.day || '';
         this.startTime = init?.startTime || '';
@@ -27,6 +28,7 @@ export class Timerecords {
 
     static fromJSON(obj: any): Timerecords {
         return new Timerecords({
+            id: obj.id || '',
             date: typeof obj.date === 'number' ? obj.date : Number(obj.date),
             day: obj.day || '',
             startTime: obj.startTime || '',
@@ -45,6 +47,7 @@ export class Timerecords {
      */
     toJSON() {
         return {
+            id: this.id,
             date: this.date,
             day: this.day,
             startTime: this.startTime,

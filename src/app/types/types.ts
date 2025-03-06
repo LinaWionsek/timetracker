@@ -10,6 +10,7 @@ export type userData = {
   };
 
  export type timeRecords = {
+    id?: string;
     date: number;
     day: string;
     startTime: string;

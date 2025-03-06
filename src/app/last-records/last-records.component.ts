@@ -25,23 +25,40 @@ export class LastRecordsComponent {
   ngOnInit() {
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
-      console.log('test:', changes);
-
-      this.allTimerecords = changes.map(record => 
-        Timerecords.fromJSON({
-          ...record,
-          date: typeof record.date === 'number' ? record.date : Number(record.date),
-          createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
-        })
-      );
-     
-
-      // this.sortTimeRecords();
-      // Zeigt nur die ersten 5 Einträge an (schon sortiert durch sortTimeRecords)
-      this.allTimerecords = this.allTimerecords.slice(0, 5);
-
-      const weeklyTotals = this.groupByWeek(this.allTimerecords);
-      console.log('Wochensummen:', weeklyTotals);
+      // console.log('Erhaltene Daten:', changes);
+  
+      // Prüfen, ob überhaupt Daten kommen
+      if (!changes || changes.length === 0) {
+        console.log('Keine Daten erhalten');
+        return;
+      }
+  
+      try {
+        this.allTimerecords = changes.map(record => {
+          const timerecord = Timerecords.fromJSON({
+            ...record,
+            date: typeof record.date === 'number' ? record.date : Number(record.date),
+            createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
+          });
+          
+          // ID direkt setzen, falls vorhanden
+          if (record.id) {
+            timerecord.id = record.id;
+          }
+          
+          return timerecord;
+        });
+  
+        console.log('Verarbeitete Timerecords:', this.allTimerecords);
+        
+        // Weitere Verarbeitung...
+        this.allTimerecords = this.allTimerecords.slice(0, 5);
+        
+        const weeklyTotals = this.groupByWeek(this.allTimerecords);
+        console.log('Wochensummen:', weeklyTotals);
+      } catch (error) {
+        console.error('Fehler bei der Verarbeitung:', error);
+      }
     });
   }
 

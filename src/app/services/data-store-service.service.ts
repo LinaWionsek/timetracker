@@ -31,13 +31,13 @@ export class DataStoreServiceService {
 
   async safeData(daten: Timerecords) {
     await addDoc(collection(this.firestore, 'timerecords'), daten.toJSON())
-        .catch((err) => { console.log(err) })
-        .then((docRef) => { console.log('Document written with ID: ', docRef?.id); });
-}
+      .catch((err) => { console.log(err) })
+      .then((docRef) => { console.log('Document written with ID: ', docRef?.id); });
+  }
 
   getTimerecords() {
     const timerecordsCollection = collection(this.firestore, 'timerecords');
-    this.timerecords$ = collectionData(timerecordsCollection) as Observable<Timerecords[]>;
+    this.timerecords$ = collectionData(timerecordsCollection, { idField: 'id' }) as Observable<Timerecords[]>;
     return this.timerecords$;
   }
 
