@@ -137,9 +137,6 @@
   }
 }
 
-
-
-
 .toast {
   @include position(fixed, 85%, 50%, $zi: 4);
   @include font-style($font-size-24, $font-weight-500, white);
