@@ -1,6 +1,6 @@
 import { CommonModule, Time } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-
+import { MatIconModule } from '@angular/material/icon';
 import { Timerecords } from '../models/timerecords.class';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
@@ -12,7 +12,7 @@ import { startOfWeek, format, endOfWeek } from 'date-fns';
 @Component({
   selector: 'app-time-logs',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule, MatIconModule],
   templateUrl: './time-logs.component.html',
   styleUrl: './time-logs.component.scss'
 })
@@ -20,7 +20,7 @@ export class TimeLogsComponent {
   private _liveAnnouncer = inject(LiveAnnouncer);
   dataStoreService = inject(DataStoreServiceService);
   allTimerecords: Timerecords[] = [];
-  displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at'];
+  displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
 
   weeklyDisplayedColumns: string[] = ['weekRange', 'totalHours'];
   weeklyDataSource = new MatTableDataSource<any>([]);
@@ -126,5 +126,7 @@ export class TimeLogsComponent {
     }
   }
 
-
+  edit(timerecord: Timerecords){
+    console.log('Edit:', timerecord);
+  }
 }
