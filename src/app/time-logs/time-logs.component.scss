@@ -2,7 +2,7 @@
 @import "./../../styles";
 
 .content {
-    @include display-flex($ai: flex-start, $gap: 16px);
+    @include display-flex($ai: flex-start, $fd:column, $gap: 16px);
     // @include size(100%, 100%);
     // margin: 0 64px;
 }

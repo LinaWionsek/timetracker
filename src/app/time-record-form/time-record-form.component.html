@@ -1,7 +1,7 @@
 <div class="content">
     <div class="time-tracker">
 
-        <h1> {{ isEditMode ? 'Edit' : 'New Entry' }}</h1>
+        <h1> {{ isEditMode ? 'Eintrag bearbeiten' : 'Neuer Eintrag' }}</h1>
         <!-- Datum -->
         <mat-form-field appearance="fill" subscriptSizing="dynamic" class="date-picker">
             <mat-label>Wähle ein Datum</mat-label>
@@ -74,7 +74,7 @@
             </div>
 
             <!-- Button: Zeit berechnen -->
-            <button mat-raised-button color="primary" (click)="calculateTime()" class="calculate-btn"
+            <button mat-raised-button color="" (click)="calculateTime()" class="calculate-btn"
                 [disabled]="!record.startTime || !record.endTime || record.startTime > record.endTime">
                 Arbeitszeit berechnen
             </button>
@@ -96,14 +96,11 @@
         <div class="submit-container">
             <button mat-raised-button color="primary" (click)="onSaveClick()"
                 [disabled]="!record.startTime || !record.endTime || !calculationFinished">
-                {{ isEditMode ? 'Update' : 'Save' }}
+                {{ isEditMode ? 'Ok' : 'Speichern' }}
             </button>
             @if (isEditMode) {
-            <button (click)="closeDialog()" mat-raised-button color="warn">Cancel</button>
+            <button (click)="closeDialog()" mat-raised-button color="warn">Abbrechen</button>
             }
-        </div>
-        <div>
-            DELETE
         </div>
     </div>
 

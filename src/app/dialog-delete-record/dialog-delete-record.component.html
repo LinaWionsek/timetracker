@@ -1,0 +1,10 @@
+<div class="wrapper">
+    <h1 mat-dialog-title>Löschen bestätigen</h1>
+    <div mat-dialog-content>
+        <p>Möchtest du den Eintrag <span class="entry-bold">{{timerecord.day}} {{timerecord.date | date:'dd.MM.yyyy'}}</span> wirklich löschen?</p>
+    </div>
+    <div mat-dialog-actions class="dialog-actions">
+        <button mat-button (click)="onNoClick()">Abbrechen</button>
+        <button mat-raised-button color="warn" (click)="onYesClick()">Löschen</button>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 24px;
+    background-color: #ffffff;
+    padding: 32px 16px;
+    border-radius: 4px;
+    
+    p{
+        font-size: 16px;
+    }
+
+    .entry-bold{
+        font-weight: 500;
+        color: red;
+    }
+
+    .dialog-actions{
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+    }
+}

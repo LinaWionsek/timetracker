@@ -4,12 +4,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { Timerecords } from '../models/timerecords.class';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { startOfWeek, format, endOfWeek } from 'date-fns';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
+import { DialogDeleteRecordComponent } from '../dialog-delete-record/dialog-delete-record.component';
 
 @Component({
   selector: 'app-time-logs',
@@ -136,10 +137,21 @@ export class TimeLogsComponent {
 
   delete(timerecord: Timerecords) {
     console.log('Delete:', timerecord);
-    const reallyDelete = confirm('Möchtest du diesen Eintrag wirklich löschen?');
-    if (!reallyDelete) {
-      return;
-    }
-    this.dataStoreService.deleteTimerecord(timerecord);
+    // const reallyDelete = confirm('Möchtest du diesen Eintrag wirklich löschen?');
+    // if (!reallyDelete) {
+    //   return;
+    // }
+    // this.dataStoreService.deleteTimerecord(timerecord);
+    const dialog = this.dialog.open(DialogDeleteRecordComponent)
+    dialog.componentInstance.timerecord = new Timerecords(timerecord);
+
+    dialog.afterClosed().subscribe(result => {
+      // result === true, wenn der Benutzer auf "Löschen" geklickt hat
+      if (result === true) {
+        console.log('Delete:', timerecord);
+        // 3) Jetzt erst wirklich löschen (Service, API-Aufruf etc.)
+        this.dataStoreService.deleteTimerecord(timerecord);
+      }
+    });
   }
 }
