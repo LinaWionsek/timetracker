@@ -133,4 +133,13 @@ export class TimeLogsComponent {
     const dialog = this.dialog.open(DialogEditRecordComponent);
     dialog.componentInstance.timerecord = new Timerecords(timerecord);
   }
+
+  delete(timerecord: Timerecords) {
+    console.log('Delete:', timerecord);
+    const reallyDelete = confirm('Möchtest du diesen Eintrag wirklich löschen?');
+    if (!reallyDelete) {
+      return;
+    }
+    this.dataStoreService.deleteTimerecord(timerecord);
+  }
 }

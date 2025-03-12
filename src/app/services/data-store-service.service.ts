@@ -12,6 +12,7 @@ import {
   addDoc,
   where,
   onSnapshot,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
@@ -61,4 +62,8 @@ export class DataStoreServiceService {
     return null; // oder undefined, je nachdem was du bevorzugst
   }
 
+  async deleteTimerecord(daten: Timerecords) {
+    const docRef = doc(this.firestore, 'timerecords', daten.id);
+    await deleteDoc(docRef).catch((err) => { console.log(err) });
+  }
 }
