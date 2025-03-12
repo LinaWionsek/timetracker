@@ -3,7 +3,7 @@
 
         <h1> {{ isEditMode ? 'Edit' : 'New Entry' }}</h1>
         <!-- Datum -->
-        <mat-form-field appearance="fill" subscriptSizing="dynamic">
+        <mat-form-field appearance="fill" subscriptSizing="dynamic" class="date-picker">
             <mat-label>Wähle ein Datum</mat-label>
             <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" (dateChange)="onDateChange()"
                 required />
@@ -12,11 +12,11 @@
         </mat-form-field>
 
         <div class="weekday-container">
-            <div class="day-box">
-                <div class="day">
+            <div class="daytest">
+                <!-- <div class="day"> -->
                     <span>{{ record.day }}</span>
                     <span>{{ selectedDate | date:'dd.MM.yyyy' }}</span>
-                </div>
+                <!-- </div> -->
             </div>
 
             <!-- Startzeit -->
@@ -74,7 +74,7 @@
             </div>
 
             <!-- Button: Zeit berechnen -->
-            <button mat-raised-button color="primary" (click)="calculateTime()"
+            <button mat-raised-button color="primary" (click)="calculateTime()" class="calculate-btn"
                 [disabled]="!record.startTime || !record.endTime || record.startTime > record.endTime">
                 Arbeitszeit berechnen
             </button>
@@ -99,7 +99,7 @@
                 {{ isEditMode ? 'Update' : 'Save' }}
             </button>
             @if (isEditMode) {
-            <button (click)="closeDialog()" mat-raised-button color="primary">Cancel</button>
+            <button (click)="closeDialog()" mat-raised-button color="warn">Cancel</button>
             }
         </div>
     </div>

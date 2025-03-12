@@ -6,14 +6,26 @@
   @include display-flex($jc: space-between);
   width: 100%;
   gap: 8px;
+
   span {
     font-size: 18px;
     font-weight: 500;
   }
 }
 
-.datepicker {
-  padding-left: 0;
+.daytest {
+  @include display-flex($jc: space-between);
+  width: 100%;
+  gap: 8px;
+
+  span {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.date-picker {
+  width: 268px;
 }
 
 
@@ -25,18 +37,19 @@
 }
 
 .time-tracker {
-  @include display-flex($fd: column, $jc: flex-start, $gap: 8px);
+  @include display-flex($fd: column, $jc: flex-start, $gap: 24px);
   background-color: #ffffff;
   padding: 32px 16px;
   height: 600px;
   width: 330px;
   border-radius: 4px;
+  position: relative;
 }
 
 .weekday-container {
   @include display-flex($fd: column, $ai: flex-start, $gap: 16px);
   background-color: #ffffff;
-  margin-top: 8px;
+  // margin-top: 8px;
   // border: 1px solid rgba(0, 0, 0, 0.12);
   // border-radius: 4px;
   // height: 80px;
@@ -64,11 +77,13 @@
     border-radius: unset;
     height: 56px;
     width: 56px;
+
     &:hover {
       cursor: pointer;
       border-color: black;
       background-color: #ecececec;
     }
+
     img {
       border-radius: 0px;
     }
@@ -104,7 +119,7 @@
 
 .time-diff-container {
   @include display-flex($fd: column, $ai: flex-start);
-//   height: 50px;
+  //   height: 50px;
   border-radius: 4px;
   padding: 4px;
   background-color: hsl(206deg 100% 73.3% / 26%);
@@ -135,6 +150,16 @@
     background-color: #ffebee;
     color: #c62828;
   }
+}
+
+.calculate-btn {
+  margin-bottom: 16px;
+}
+
+.submit-container {
+  @include display-flex($gap: 32px);
+  position: absolute;
+  bottom: 32px;
 }
 
 .toast {

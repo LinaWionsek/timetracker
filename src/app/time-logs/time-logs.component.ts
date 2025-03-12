@@ -8,6 +8,8 @@ import { AfterViewInit, Component, ViewChild, inject } from '@angular/core';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { startOfWeek, format, endOfWeek } from 'date-fns';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 
 @Component({
   selector: 'app-time-logs',
@@ -25,7 +27,7 @@ export class TimeLogsComponent {
   weeklyDisplayedColumns: string[] = ['weekRange', 'totalHours'];
   weeklyDataSource = new MatTableDataSource<any>([]);
 
-
+  dialog = inject(MatDialog);
   dataSource = new MatTableDataSource(this.allTimerecords);
 
   @ViewChild('detailSort') detailSort!: MatSort;
@@ -126,7 +128,9 @@ export class TimeLogsComponent {
     }
   }
 
-  edit(timerecord: Timerecords){
+  edit(timerecord: Timerecords) {
     console.log('Edit:', timerecord);
+    const dialog = this.dialog.open(DialogEditRecordComponent);
+    dialog.componentInstance.timerecord = new Timerecords(timerecord);
   }
 }
