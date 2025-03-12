@@ -2,15 +2,13 @@
 @import "./../../styles";
 
 .content {
-    @include display-flex($ai: flex-start, $fd:column, $gap: 16px);
-    // @include size(100%, 100%);
-    // margin: 0 64px;
+    @include display-flex($fd:column, $gap: 16px);
+    padding: 20px;
 }
 
-.content {
-    padding: 20px;
-    
-}
+.overview-container {
+    @include display-flex($fd: column, $ai: flex-start);
+}   
 
 .weekly-container,
 .detail-container {
