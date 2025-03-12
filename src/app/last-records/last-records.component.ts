@@ -21,47 +21,45 @@ export class LastRecordsComponent {
   timerecord!: Timerecords;
   allTimerecords: Timerecords[] = [];
   //allTimerecords braucht kein $, weil es sich dabei um die konkreten Daten (ein normales Array) handelt und nicht um ein Observable.
-  
+
 
   ngOnInit() {
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
-      // console.log('Erhaltene Daten:', changes);
-  
-      // Prüfen, ob überhaupt Daten kommen
-      if (!changes || changes.length === 0) {
-        console.log('Keine Daten erhalten');
-        return;
-      }
-  
-      try {
-        this.allTimerecords = changes.map(record => {
-          const timerecord = Timerecords.fromJSON({
-            ...record,
-            date: typeof record.date === 'number' ? record.date : Number(record.date),
-            createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
-          });
-          
-          // ID direkt setzen, falls vorhanden
-          if (record.id) {
-            timerecord.id = record.id;
-          }
-          
-          return timerecord;
-        });
-  
-        console.log('Verarbeitete Timerecords:', this.allTimerecords);
-        
-        // Weitere Verarbeitung...
-        this.allTimerecords = this.allTimerecords.slice(0, 5);
-        
-        const weeklyTotals = this.groupByWeek(this.allTimerecords);
-        console.log('Wochensummen:', weeklyTotals);
-      } catch (error) {
-        console.error('Fehler bei der Verarbeitung:', error);
-      }
+      this.processTimerecords(changes);
     });
   }
+
+  processTimerecords(changes: Timerecords[]) {
+    // Prüfen, ob überhaupt Daten kommen
+    if (!changes || changes.length === 0) {
+      console.log('Keine Daten erhalten');
+      return;
+    }
+    try {
+      this.allTimerecords = changes.map(record => this.mapTimerecord(record));
+      this.sortTimeRecords();
+      this.allTimerecords = this.allTimerecords.slice(0, 5);
+    } catch (error) {
+      console.error('Fehler bei der Verarbeitung:', error);
+    }
+  }
+
+  mapTimerecord(record: Timerecords){
+    const timerecord = Timerecords.fromJSON({
+      ...record,
+      date: typeof record.date === 'number' ? record.date : Number(record.date),
+      createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
+    });
+
+    // set's id if it exists
+    if (record.id) {
+      timerecord.id = record.id;
+    }
+
+    return timerecord;
+  }
+
 
   edit(timerecord: Timerecords) {
     const dialog = this.dialog.open(DialogEditRecordComponent);
@@ -74,7 +72,7 @@ export class LastRecordsComponent {
 
 
   groupByWeek(records: Timerecords[]) {
-  
+
     const weeks: { [key: string]: number } = {};
 
     records.forEach(record => {
