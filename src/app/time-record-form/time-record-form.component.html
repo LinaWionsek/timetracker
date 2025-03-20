@@ -74,7 +74,7 @@
             </div>
 
             <!-- Button: Zeit berechnen -->
-            <button mat-raised-button color="" (click)="calculateTime()" class="calculate-btn"
+            <button mat-stroked-button color="primary" (click)="calculateTime()" class="calculate-btn"
                 [disabled]="!record.startTime || !record.endTime || record.startTime > record.endTime">
                 Arbeitszeit berechnen
             </button>
@@ -99,7 +99,7 @@
                 {{ isEditMode ? 'Ok' : 'Speichern' }}
             </button>
             @if (isEditMode) {
-            <button (click)="closeDialog()" mat-raised-button color="warn">Abbrechen</button>
+            <button (click)="closeDialog()" mat-raised-button color="">Abbrechen</button>
             }
         </div>
     </div>

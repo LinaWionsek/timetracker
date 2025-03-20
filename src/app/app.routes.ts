@@ -3,7 +3,7 @@ import { MainComponent } from './main/main.component';
 import { TimeLogsComponent } from './time-logs/time-logs.component';
 
 export const routes: Routes = [
-    { path: 'overview', component: MainComponent },
-    { path: 'logs', component: TimeLogsComponent },
-    { path: '', redirectTo: '/overview', pathMatch: 'full' }
+    { path: 'time-tracking', component: MainComponent },
+    { path: 'time-overview', component: TimeLogsComponent },
+    { path: '', redirectTo: '/time-tracking', pathMatch: 'full' }
 ];
