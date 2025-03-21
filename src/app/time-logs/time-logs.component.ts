@@ -83,19 +83,55 @@ export class TimeLogsComponent {
       );
 
       this.dataSource.data = this.allTimerecords;
+
+      // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
+      if (!this.hasEntriesInMonth(this.currentMonth)) {
+        const currentMonth = new Date();
+        if (this.hasEntriesInMonth(currentMonth)) {
+          this.currentMonth = currentMonth;
+        } else {
+          // Suche nach dem nächsten Monat mit Einträgen
+          const nextMonth = this.findNextMonthWithEntries(currentMonth);
+          if (nextMonth) {
+            this.currentMonth = nextMonth;
+          } else {
+            // Suche nach dem vorherigen Monat mit Einträgen
+            const prevMonth = this.findPreviousMonthWithEntries(currentMonth);
+            if (prevMonth) {
+              this.currentMonth = prevMonth;
+            }
+          }
+        }
+      }
+
       this.updateWeeklyData();
       this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
+      this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
     });
   }
 
   previousMonth() {
-    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
-    this.updateWeeklyData();
+    const prevMonth = this.findPreviousMonthWithEntries(this.currentMonth);
+    if (prevMonth) {
+      this.currentMonth = prevMonth;
+      this.updateWeeklyData();
+      this.updateNavigationState();
+    }
   }
 
   nextMonth() {
-    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 1);
-    this.updateWeeklyData();
+    const nextMonth = this.findNextMonthWithEntries(this.currentMonth);
+    if (nextMonth) {
+      this.currentMonth = nextMonth;
+      this.updateWeeklyData();
+      this.updateNavigationState();
+    }
+  }
+
+  // Aktualisiert den Zustand der Navigationsbuttons
+  updateNavigationState() {
+    this.hasPreviousMonth = !!this.findPreviousMonthWithEntries(this.currentMonth);
+    this.hasNextMonth = !!this.findNextMonthWithEntries(this.currentMonth);
   }
 
   updateWeeklyData() {
@@ -272,56 +308,107 @@ export class TimeLogsComponent {
 
 
 
-// Berechnet den Gesamtsaldo über alle Zeiteinträge hinweg
-calculateCumulativeDifference() {
-  const allWorkdays = this.getAllWorkdaysSinceStart();
-  const totalTargetMinutes = allWorkdays.length * this.dailyTargetMinutes;
-  
-  // Summe aller tatsächlich gearbeiteten Minuten
-  let totalWorkedMinutes = 0;
-  this.allTimerecords.forEach(record => {
-    let minutes = record.totalMinutes;
-    if (!minutes && record.timeWorked) {
-      const [hours, mins] = record.timeWorked.split(':').map(Number);
-      minutes = hours * 60 + mins;
-    }
-    totalWorkedMinutes += (minutes || 0);
-  });
-  
-  this.cumulativeDifferenceMinutes = totalWorkedMinutes - totalTargetMinutes;
-}
+  // Berechnet den Gesamtsaldo über alle Zeiteinträge hinweg
+  calculateCumulativeDifference() {
+    const allWorkdays = this.getAllWorkdaysSinceStart();
+    const totalTargetMinutes = allWorkdays.length * this.dailyTargetMinutes;
 
-// Ermittelt alle Arbeitstage seit Beginn der Zeiterfassung
-getAllWorkdaysSinceStart(): Date[] {
-  if (this.allTimerecords.length === 0) return [];
-  
-  // Frühestes und spätestes Datum finden
-  const dates = this.allTimerecords.map(r => new Date(r.date));
-  const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
-  const endDate = new Date(Math.max(...dates.map(d => d.getTime())));
-  
-  // Auf den ersten Tag des Monats setzen für Start
-  const firstDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-  const lastDay = endDate;
-  
-  // Alle Arbeitstage im Zeitraum ermitteln
-  const allWorkdays: Date[] = [];
-  let currentDay = firstDay;
-  
-  while (currentDay <= lastDay) {
-    if (this.isWorkday(currentDay)) {
-      allWorkdays.push(new Date(currentDay));
-    }
-    currentDay = addDays(currentDay, 1);
+    // Summe aller tatsächlich gearbeiteten Minuten
+    let totalWorkedMinutes = 0;
+    this.allTimerecords.forEach(record => {
+      let minutes = record.totalMinutes;
+      if (!minutes && record.timeWorked) {
+        const [hours, mins] = record.timeWorked.split(':').map(Number);
+        minutes = hours * 60 + mins;
+      }
+      totalWorkedMinutes += (minutes || 0);
+    });
+
+    this.cumulativeDifferenceMinutes = totalWorkedMinutes - totalTargetMinutes;
   }
-  
-  return allWorkdays;
-}
+
+  // Ermittelt alle Arbeitstage seit Beginn der Zeiterfassung
+  getAllWorkdaysSinceStart(): Date[] {
+    if (this.allTimerecords.length === 0) return [];
+
+    // Frühestes und spätestes Datum finden
+    const dates = this.allTimerecords.map(r => new Date(r.date));
+    const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
+    const endDate = new Date(Math.max(...dates.map(d => d.getTime())));
+
+    // Auf den ersten Tag des Monats setzen für Start
+    const firstDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+    const lastDay = endDate;
+
+    // Alle Arbeitstage im Zeitraum ermitteln
+    const allWorkdays: Date[] = [];
+    let currentDay = firstDay;
+
+    while (currentDay <= lastDay) {
+      if (this.isWorkday(currentDay)) {
+        allWorkdays.push(new Date(currentDay));
+      }
+      currentDay = addDays(currentDay, 1);
+    }
+
+    return allWorkdays;
+  }
 
 
-getCumulativeDifferenceString(): string {
-  return this.minutesToDifferenceString(this.cumulativeDifferenceMinutes);
-}
+  getCumulativeDifferenceString(): string {
+    return this.minutesToDifferenceString(this.cumulativeDifferenceMinutes);
+  }
+
+
+
+  ///////////////////////Naviagtion////////////////////////////////////////
+
+
+  // Prüft, ob ein bestimmter Monat Zeiteinträge enthält
+  hasEntriesInMonth(month: Date): boolean {
+    const firstDayOfMonth = startOfMonth(month);
+    const lastDayOfMonth = endOfMonth(month);
+
+    return this.allTimerecords.some(record => {
+      const recordDate = new Date(record.date);
+      return recordDate >= firstDayOfMonth && recordDate <= lastDayOfMonth &&
+        (record.totalMinutes > 0 || (record.timeWorked && record.timeWorked !== '0:00'));
+    });
+  }
+
+  // Findet den nächsten Monat mit Einträgen
+  findNextMonthWithEntries(startMonth: Date): Date | null {
+    let nextMonth = new Date(startMonth.getFullYear(), startMonth.getMonth() + 1, 1);
+
+    // Suche bis zu 24 Monate in die Zukunft (als Sicherheit)
+    for (let i = 0; i < 24; i++) {
+      if (this.hasEntriesInMonth(nextMonth)) {
+        return nextMonth;
+      }
+      nextMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 1);
+    }
+
+    return null; // Kein Monat mit Einträgen gefunden
+  }
+
+  // Findet den vorherigen Monat mit Einträgen
+  findPreviousMonthWithEntries(startMonth: Date): Date | null {
+    let prevMonth = new Date(startMonth.getFullYear(), startMonth.getMonth() - 1, 1);
+
+    // Suche bis zu 24 Monate in die Vergangenheit (als Sicherheit)
+    for (let i = 0; i < 24; i++) {
+      if (this.hasEntriesInMonth(prevMonth)) {
+        return prevMonth;
+      }
+      prevMonth = new Date(prevMonth.getFullYear(), prevMonth.getMonth() - 1, 1);
+    }
+
+    return null; // Kein Monat mit Einträgen gefunden
+  }
+
+  // Properties für Button-Deaktivierung
+  hasNextMonth: boolean = false;
+  hasPreviousMonth: boolean = false;
 
 
 

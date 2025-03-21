@@ -6,18 +6,18 @@
             <h2>Gesamtsaldo</h2>
             <div class="balance"
                 [ngClass]="{'positive': cumulativeDifferenceMinutes >= 0, 'negative': cumulativeDifferenceMinutes < 0}">
-                {{ getCumulativeDifferenceString() }}
+                {{ getCumulativeDifferenceString() }} 
             </div>
         </div>
 
         <div class="month-navigation">
-            <button mat-icon-button (click)="previousMonth()">
+            <button mat-icon-button (click)="previousMonth()" [disabled]="!hasPreviousMonth">
                 <mat-icon>arrow_back</mat-icon>
-            </button>
-            <span class="month-title">{{ currentMonth | date:'MMMM yyyy' }}</span>
-            <button mat-icon-button (click)="nextMonth()">
+              </button>
+              <span class="month-heading">{{ currentMonth | date:'MMMM yyyy' }}</span>
+              <button mat-icon-button (click)="nextMonth()" [disabled]="!hasNextMonth">
                 <mat-icon>arrow_forward</mat-icon>
-            </button>
+              </button>
         </div>
 
         <div class="weekly-container mb-8">

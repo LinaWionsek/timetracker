@@ -139,3 +139,38 @@ table {
   .negative {
     color: red;
   }
+
+  .header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .month-navigation {
+    display: flex;
+    align-items: center;
+  }
+  
+  .weekly-hours-selector {
+    width: 160px;
+  }
+  
+  .month-title {
+    margin: 0 15px;
+    font-weight: 500;
+  }
+  
+  .workday-info {
+    font-size: 0.85em;
+    color: #666;
+    margin-left: 8px;
+  }
+  
+  .positive {
+    color: #2e7d32;
+  }
+  
+  .negative {
+    color: #d32f2f;
+  }
