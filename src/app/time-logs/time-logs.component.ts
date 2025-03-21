@@ -176,9 +176,12 @@ export class TimeLogsComponent {
 
   // Hilfsfunktion: Minuten in Differenzstring umwandeln
   minutesToDifferenceString(minutes: number): string {
-    return `${minutes >= 0 ? '+' : ''}${Math.floor(minutes / 60)}:${Math.abs(minutes % 60).toString().padStart(2, '0')}`;
+    const isNegative = minutes < 0;
+    const absMinutes = Math.abs(minutes);
+    const hours = Math.floor(absMinutes / 60);
+    const mins = absMinutes % 60;
+    return `${isNegative ? '-' : '+'}${hours}:${mins.toString().padStart(2, '0')}`;
   }
-
   // Berechnungen für die Fußzeile
   calculateTotalActualHours(): string {
     const totalMinutes = this.weeklyDataSource.data.reduce((acc, week) => acc + week.totalMinutes, 0);
