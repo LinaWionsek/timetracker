@@ -74,3 +74,50 @@ table {
     height: 16px;
     line-height: 16px;
   }
+
+
+
+
+
+
+
+  .positive {
+    color: #4caf50;
+   
+  }
+  
+  .negative {
+    color: #f44336;
+   
+  }
+  
+  .month-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  .month-title {
+    margin: 0 16px;
+   
+    font-size: 18px;
+    min-width: 150px;
+    text-align: center;
+  }
+  
+  .mat-footer-row {
+   
+    background-color: #e0e0e0;
+  }
+  
+  .weekly-container {
+    margin-bottom: 30px;
+  }
+  
+  .w-full {
+    width: 100%;
+  }

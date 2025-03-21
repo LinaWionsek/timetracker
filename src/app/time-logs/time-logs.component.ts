@@ -1,21 +1,41 @@
-import { CommonModule, Time } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { Timerecords } from '../models/timerecords.class';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, ViewChild, inject } from '@angular/core';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { startOfWeek, format, endOfWeek } from 'date-fns';
+import { 
+  startOfWeek, endOfWeek, format, 
+  startOfMonth, endOfMonth, eachWeekOfInterval, isSameMonth,
+  isWithinInterval, getISOWeek, addDays, getDay
+} from 'date-fns';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 import { DialogDeleteRecordComponent } from '../dialog-delete-record/dialog-delete-record.component';
 
+interface WeeklyData {
+  weekStart: string;
+  weekEnd: string;
+  weekNumber: number;
+  weekStartDate: Date;
+  weekEndDate: Date;
+  totalMinutes: number;
+  targetMinutes: number;
+  differenceMinutes: number;
+  actualHours: string;
+  targetHours: string;
+  difference: string;
+  workdaysInMonth: number;
+}
+
 @Component({
   selector: 'app-time-logs',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule, MatIconModule, MatButtonModule],
   templateUrl: './time-logs.component.html',
   styleUrl: './time-logs.component.scss'
 })
@@ -25,8 +45,22 @@ export class TimeLogsComponent {
   allTimerecords: Timerecords[] = [];
   displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
 
-  weeklyDisplayedColumns: string[] = ['weekRange', 'totalHours'];
-  weeklyDataSource = new MatTableDataSource<any>([]);
+  weeklyDisplayedColumns: string[] = ['weekRange', 'actualHours', 'targetHours', 'difference'];
+  weeklyDataSource = new MatTableDataSource<WeeklyData>([]);
+  
+  // Aktuelles Datum für Monatsnavigation
+  currentMonth: Date = new Date();
+  
+  // Vertraglich vereinbarte Wochenarbeitszeit in Minuten (40 Stunden)
+  contractWeeklyMinutes: number = 36 * 60;
+  
+  // Anzahl der Arbeitstage pro Woche (Mo-Fr)
+  workdaysPerWeek: number = 5;
+  
+  // Tägliche Sollarbeitszeit in Minuten (berechnet aus vertraglicher Wochenarbeitszeit)
+  get dailyTargetMinutes(): number {
+    return this.contractWeeklyMinutes / this.workdaysPerWeek;
+  }
 
   dialog = inject(MatDialog);
   dataSource = new MatTableDataSource(this.allTimerecords);
@@ -34,12 +68,9 @@ export class TimeLogsComponent {
   @ViewChild('detailSort') detailSort!: MatSort;
   @ViewChild('weeklySort') weeklySort!: MatSort;
 
-
   ngOnInit() {
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
-      console.log('Changes:', changes);
-
       this.allTimerecords = changes.map(record =>
         Timerecords.fromJSON({
           ...record,
@@ -49,78 +80,159 @@ export class TimeLogsComponent {
       );
 
       this.dataSource.data = this.allTimerecords;
-      // this.sortTimeRecords();
-      // Zeigt nur die ersten 5 Einträge an (schon sortiert durch sortTimeRecords)
-      // this.allTimerecords = this.allTimerecords.slice(0, 5);
-
-      const weeklyTotals = this.groupByWeek(this.allTimerecords);
-      this.weeklyDataSource.data = weeklyTotals;
-      console.log('Wochensummen:', weeklyTotals);
+      this.updateWeeklyData();
     });
   }
 
-  sortTimeRecords() {
-    this.allTimerecords.sort((a, b) => b.date - a.date);
+  previousMonth() {
+    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() - 1, 1);
+    this.updateWeeklyData();
   }
-  groupByWeek(records: Timerecords[]) {
 
-    const weeks: { [key: string]: number } = {};
+  nextMonth() {
+    this.currentMonth = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 1);
+    this.updateWeeklyData();
+  }
 
-    records.forEach(record => {
-      // Konvertiere Timestamp zu Date für date-fns Funktionen
-      const weekStart = startOfWeek(new Date(record.date), { weekStartsOn: 1 });
-      const weekKey = format(weekStart, 'yyyy-MM-dd');
+  updateWeeklyData() {
+    const monthlyWeeklyData = this.getMonthlyWeeklyData(this.currentMonth, this.allTimerecords);
+    this.weeklyDataSource.data = monthlyWeeklyData;
+  }
 
-      let minutes = record.totalMinutes;
-      if (!minutes && record.timeWorked) {
-        const [hours, mins] = record.timeWorked.split(':').map(Number);
-        minutes = hours * 60 + mins;
-      }
-      weeks[weekKey] = (weeks[weekKey] || 0) + (minutes || 0);
+  // Prüft, ob ein Tag ein Arbeitstag ist (Mo-Fr)
+  isWorkday(date: Date): boolean {
+    const day = getDay(date);
+    // 0 = Sonntag, 1-5 = Mo-Fr, 6 = Samstag
+    return day >= 1 && day <= 5;
+  }
+
+  getMonthlyWeeklyData(month: Date, records: Timerecords[]): WeeklyData[] {
+    // Start- und Enddatum des Monats
+    const firstDayOfMonth = startOfMonth(month);
+    const lastDayOfMonth = endOfMonth(month);
+    
+    // Alle Wochen im Monat ermitteln
+    const weeksInMonth = eachWeekOfInterval(
+      { start: firstDayOfMonth, end: lastDayOfMonth },
+      { weekStartsOn: 1 } // Woche beginnt am Montag
+    );
+    
+    return weeksInMonth.map(weekStart => {
+      const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+      
+      // Berechnen der Arbeitstage dieser Woche, die im aktuellen Monat liegen
+      const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+      
+      // Filter nur Arbeitstage (Mo-Fr) im aktuellen Monat
+      const workdaysInMonth = weekDays.filter(day => 
+        this.isWorkday(day) && isSameMonth(day, month)
+      ).length;
+      
+      // Wochen-Soll für diesen Monat = Tägliche Sollzeit * Anzahl Arbeitstage im Monat
+      const targetMinutes = workdaysInMonth * this.dailyTargetMinutes;
+      
+      // Einträge für diese Woche finden, die im aktuellen Monat liegen
+      const weekRecords = records.filter(record => {
+        const recordDate = new Date(record.date);
+        return isWithinInterval(recordDate, { start: weekStart, end: weekEnd }) && 
+               isSameMonth(recordDate, month);
+      });
+      
+      // Summe der Arbeitsminuten berechnen
+      let totalMinutes = 0;
+      weekRecords.forEach(record => {
+        let minutes = record.totalMinutes;
+        if (!minutes && record.timeWorked) {
+          const [hours, mins] = record.timeWorked.split(':').map(Number);
+          minutes = hours * 60 + mins;
+        }
+        totalMinutes += (minutes || 0);
+      });
+      
+      // Differenz berechnen
+      const differenceMinutes = totalMinutes - targetMinutes;
+      
+      return {
+        weekNumber: getISOWeek(weekStart),
+        weekStart: format(weekStart, 'dd.MM.yyyy'),
+        weekEnd: format(weekEnd, 'dd.MM.yyyy'),
+        weekStartDate: weekStart,
+        weekEndDate: weekEnd,
+        totalMinutes,
+        targetMinutes,
+        differenceMinutes,
+        actualHours: this.minutesToTimeString(totalMinutes),
+        targetHours: this.minutesToTimeString(targetMinutes),
+        difference: this.minutesToDifferenceString(differenceMinutes),
+        workdaysInMonth
+      };
     });
+  }
 
-    return Object.entries(weeks).map(([date, minutes]) => ({
-      weekStart: format(new Date(date), 'dd.MM.yyyy'),
-      weekEnd: format(endOfWeek(new Date(date), { weekStartsOn: 1 }), 'dd.MM.yyyy'),
-      totalHours: `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`
-    }));
+  // Hilfsfunktion: Minuten in Zeitstring umwandeln
+  minutesToTimeString(minutes: number): string {
+    return `${Math.floor(minutes / 60)}:${(minutes % 60).toString().padStart(2, '0')}`;
+  }
+
+  // Hilfsfunktion: Minuten in Differenzstring umwandeln
+  minutesToDifferenceString(minutes: number): string {
+    return `${minutes >= 0 ? '+' : ''}${Math.floor(minutes / 60)}:${Math.abs(minutes % 60).toString().padStart(2, '0')}`;
+  }
+
+  // Berechnungen für die Fußzeile
+  calculateTotalActualHours(): string {
+    const totalMinutes = this.weeklyDataSource.data.reduce((acc, week) => acc + week.totalMinutes, 0);
+    return this.minutesToTimeString(totalMinutes);
+  }
+
+  calculateTotalTargetHours(): string {
+    const totalMinutes = this.weeklyDataSource.data.reduce((acc, week) => acc + week.targetMinutes, 0);
+    return this.minutesToTimeString(totalMinutes);
+  }
+
+  calculateTotalDifferenceMinutes(): number {
+    return this.weeklyDataSource.data.reduce((acc, week) => acc + week.differenceMinutes, 0);
+  }
+
+  calculateTotalDifference(): string {
+    return this.minutesToDifferenceString(this.calculateTotalDifferenceMinutes());
+  }
+
+  calculateTotalWorkdays(): number {
+    return this.weeklyDataSource.data.reduce((acc, week) => acc + week.workdaysInMonth, 0);
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.detailSort;
     this.weeklyDataSource.sort = this.weeklySort;
 
-
     this.weeklyDataSource.sortingDataAccessor = (item, property) => {
       if (property === 'weekRange') {
-        // Konvertiert dd.MM.yyyy zu yyyy-MM-dd für korrekte String-Sortierung
-        const [day, month, year] = item.weekStart.split('.');
-        return `${year}-${month}-${day}`;
+        return item.weekStartDate.getTime();
+      } else if (property === 'actualHours') {
+        return item.totalMinutes;
+      } else if (property === 'targetHours') {
+        return item.targetMinutes;
+      } else if (property === 'difference') {
+        return item.differenceMinutes;
       }
-      return item[property];
+      // Typensichere Lösung ohne string-indizierung
+      return 0;
     };
-    // Optional: Eigene Sort-Funktionen definieren
+    
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
-        case 'date':
-          return item.date;
-        case 'time':
-          return item.startTime;
-        case 'break':
-          return item.breakMinutes;
-        case 'duration':
-          return item.timeWorked;
-        case 'by':
-          return item.createdBy;
-        case 'at':
-          return item.createdAt;
-        default:
-          return (item as any)[property];
+        case 'date': return item.date;
+        case 'time': return item.startTime;
+        case 'break': return item.breakMinutes;
+        case 'duration': return item.timeWorked;
+        case 'by': return item.createdBy;
+        case 'at': return item.createdAt;
+        default: return '';
       }
     };
   }
 
-  /** Announce the change in sort state for assistive technology. */
   announceSortChange(sortState: Sort) {
     if (sortState.direction) {
       this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
@@ -130,27 +242,20 @@ export class TimeLogsComponent {
   }
 
   edit(timerecord: Timerecords) {
-    console.log('Edit:', timerecord);
     const dialog = this.dialog.open(DialogEditRecordComponent);
     dialog.componentInstance.timerecord = new Timerecords(timerecord);
+    dialog.afterClosed().subscribe(() => {
+      this.updateWeeklyData();
+    });
   }
 
   delete(timerecord: Timerecords) {
-    console.log('Delete:', timerecord);
-    // const reallyDelete = confirm('Möchtest du diesen Eintrag wirklich löschen?');
-    // if (!reallyDelete) {
-    //   return;
-    // }
-    // this.dataStoreService.deleteTimerecord(timerecord);
-    const dialog = this.dialog.open(DialogDeleteRecordComponent)
+    const dialog = this.dialog.open(DialogDeleteRecordComponent);
     dialog.componentInstance.timerecord = new Timerecords(timerecord);
-
     dialog.afterClosed().subscribe(result => {
-      // result === true, wenn der Benutzer auf "Löschen" geklickt hat
       if (result === true) {
-        console.log('Delete:', timerecord);
-        // 3) Jetzt erst wirklich löschen (Service, API-Aufruf etc.)
         this.dataStoreService.deleteTimerecord(timerecord);
+        this.updateWeeklyData();
       }
     });
   }

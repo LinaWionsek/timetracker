@@ -1,32 +1,61 @@
 <div class="content">
-<div class="overview-container">
-    <div class="weekly-container mb-8">
-        <h2 class="text-xl font-bold mb-4">Weekly Overview</h2>
-        <table mat-table [dataSource]="weeklyDataSource" matSort matSortActive="weekRange" matSortDirection="desc"
-            #weeklySort="matSort" class="mat-elevation-z8">
-
-            <!-- Week Range Column -->
+    <div class="overview-container">
+        <!-- Monatsnavigation -->
+        <div class="month-navigation">
+          <button mat-icon-button (click)="previousMonth()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <span class="month-title">{{ currentMonth | date:'MMMM yyyy' }}</span>
+          <button mat-icon-button (click)="nextMonth()">
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+    
+        <div class="weekly-container mb-8">
+          <h2 class="text-xl font-bold mb-4">Monatliche Zeitübersicht (Arbeitstage: {{calculateTotalWorkdays()}})</h2>
+          <table mat-table [dataSource]="weeklyDataSource" matSort matSortActive="weekRange" matSortDirection="asc"
+                 #weeklySort="matSort" class="mat-elevation-z8 w-full">
+    
+            <!-- Wochenbereich -->
             <ng-container matColumnDef="weekRange">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Week</th>
-                <td mat-cell *matCellDef="let week">
-                    {{week.weekStart}} - {{week.weekEnd}}
-                </td>
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Kalenderwoche {{currentMonth | date:'MM/yyyy'}}</th>
+              <td mat-cell *matCellDef="let week">
+                KW {{week.weekNumber}}: {{week.weekStart}} - {{week.weekEnd}}
+                <span class="workday-info">({{week.workdaysInMonth}} Arbeitstage)</span>
+              </td>
+              <td mat-footer-cell *matFooterCellDef>Monats-Gesamt ({{calculateTotalWorkdays()}} Arbeitstage)</td>
             </ng-container>
-
-            <!-- Total Hours Column -->
-            <ng-container matColumnDef="totalHours">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Hours</th>
-                <td mat-cell *matCellDef="let week">{{week.totalHours}}</td>
+    
+            <!-- Ist-Zeit -->
+            <ng-container matColumnDef="actualHours">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Ist-Zeit</th>
+              <td mat-cell *matCellDef="let week">{{week.actualHours}}</td>
+              <td mat-footer-cell *matFooterCellDef>{{calculateTotalActualHours()}}</td>
             </ng-container>
-
+    
+            <!-- Soll-Zeit -->
+            <ng-container matColumnDef="targetHours">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Soll-Zeit</th>
+              <td mat-cell *matCellDef="let week">{{week.targetHours}}</td>
+              <td mat-footer-cell *matFooterCellDef>{{calculateTotalTargetHours()}}</td>
+            </ng-container>
+    
+            <!-- Differenz -->
+            <ng-container matColumnDef="difference">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Differenz</th>
+              <td mat-cell *matCellDef="let week" [ngClass]="{'positive': week.differenceMinutes >= 0, 'negative': week.differenceMinutes < 0}">
+                {{week.difference}}
+              </td>
+              <td mat-footer-cell *matFooterCellDef [ngClass]="{'positive': calculateTotalDifferenceMinutes() >= 0, 'negative': calculateTotalDifferenceMinutes() < 0}">
+                {{calculateTotalDifference()}}
+              </td>
+            </ng-container>
+    
             <tr mat-header-row *matHeaderRowDef="weeklyDisplayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: weeklyDisplayedColumns;"></tr>
-        </table>
-    </div>
-
-    <!-- Detaillierte Übersicht -->
-    <div class="detail-container">
-</div>
+            <tr mat-footer-row *matFooterRowDef="weeklyDisplayedColumns"></tr>
+          </table>
+        </div>
     <!-- Wöchentliche Übersicht -->
 
         <h2 class="text-xl font-bold mb-4">Detailed Time Entries</h2>
