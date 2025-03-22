@@ -107,23 +107,23 @@
 
                 <!-- Break Column -->
                 <ng-container matColumnDef="break">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Break</th>
-                    <td mat-cell *matCellDef="let element">{{element.breakMinutes}} minutes</td>
-                    <td mat-footer-cell *matFooterCellDef></td>
+                    <th class="hide-on-medium-screen" mat-header-cell *matHeaderCellDef mat-sort-header>Break</th>
+                    <td class="hide-on-medium-screen" mat-cell *matCellDef="let element">{{element.breakMinutes}} minutes</td>
+                    <td class="hide-on-medium-screen" mat-footer-cell *matFooterCellDef></td>
                 </ng-container>
 
                 <!-- By Column -->
                 <ng-container matColumnDef="by">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>By</th>
-                    <td mat-cell *matCellDef="let element">{{element.createdBy}}</td>
-                    <td mat-footer-cell *matFooterCellDef></td>
+                    <th class="hide-on-small-screen" mat-header-cell *matHeaderCellDef mat-sort-header>By</th>
+                    <td class="hide-on-small-screen" mat-cell *matCellDef="let element">{{element.createdBy}}</td>
+                    <td class="hide-on-small-screen" mat-footer-cell *matFooterCellDef></td>
                 </ng-container>
 
                 <!-- At Column -->
                 <ng-container matColumnDef="at">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header>At</th>
-                    <td mat-cell *matCellDef="let element">{{element.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
-                    <td mat-footer-cell *matFooterCellDef></td>
+                    <td class="hide-on-small-screen" mat-cell *matCellDef="let element">{{element.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
+                    <th class="hide-on-small-screen" mat-header-cell *matHeaderCellDef mat-sort-header>At</th>
+                    <td class="hide-on-small-screen" mat-footer-cell *matFooterCellDef></td>
                 </ng-container>
 
                 <!-- Edit Column -->
