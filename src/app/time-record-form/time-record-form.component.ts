@@ -15,6 +15,9 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 import { Timerecords } from '../models/timerecords.class';
 import { DataStoreServiceService } from '../services/data-store-service.service';
+import { Subscription } from 'rxjs';
+import { AuthenticationService } from '../services/authentication.service';
+import { User } from '../models/user.class';
 
 @Component({
   selector: 'app-time-record-form',
@@ -50,7 +53,9 @@ export class TimeRecordFormComponent {
   duration: number = 2000;
 
   dataStoreService = inject(DataStoreServiceService);
-
+  authService = inject(AuthenticationService);
+  authSubscription: Subscription | null = null;
+  user: User | null = null;
 
 
   closeDialog() {
@@ -59,17 +64,50 @@ export class TimeRecordFormComponent {
   }
 
   ngOnInit() {
-    // Prüfen, ob eine bestehende "Record" reinkommt
-    if (this.existingRecord && this.existingRecord.id) {
-      // → Wir sind im Edit-Mode
-      this.isEditMode = true;
-      // Kopie davon anlegen, damit wir "Original" nicht überschreiben
-      this.record = new Timerecords(this.existingRecord);
-      this.selectedDate = new Date(this.record.date);
-    } else {
-      // → Create-Modus
-      this.onDateChange(); // initialisiert: Tag etc.
-    }
+
+    this.authSubscription = this.authService.getUserStatus().subscribe(
+      (user) => {
+        this.user = user;
+        if (this.user) {
+          // Prüfen, ob eine bestehende "Record" reinkommt
+          if (this.existingRecord && this.existingRecord.id) {
+            // → Wir sind im Edit-Mode
+            this.isEditMode = true;
+            // Kopie davon anlegen, damit wir "Original" nicht überschreiben
+            this.record = new Timerecords(this.existingRecord);
+            this.selectedDate = new Date(this.record.date);
+          } else {
+            // → Create-Modus
+            this.setRecordDateAndCreator(); // initialisiert: Tag etc.
+          }
+        }
+        console.log('user tracked', this.user);
+      },
+      (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
+    );
+
+    // this.userService.user$.subscribe((user) => {
+    //   if (user) {
+    //     this.user = user;
+    //   }
+    // });
+
+
+    // // Prüfen, ob eine bestehende "Record" reinkommt
+    // if (this.existingRecord && this.existingRecord.id) {
+    //   // → Wir sind im Edit-Mode
+    //   this.isEditMode = true;
+    //   // Kopie davon anlegen, damit wir "Original" nicht überschreiben
+    //   this.record = new Timerecords(this.existingRecord);
+    //   this.selectedDate = new Date(this.record.date);
+    // } else {
+    //   // → Create-Modus
+    //   this.onDateChange(); // initialisiert: Tag etc.
+    // }
+
+
+
+
   }
 
   onSaveClick() {
@@ -81,6 +119,7 @@ export class TimeRecordFormComponent {
       this.dataStoreService.updateData(this.record);
     } else {
       // Neu anlegen
+      console.log(this.record)
       this.dataStoreService.safeData(this.record)
         .then(() => {
           console.log('Erfolgreich neu angelegt');
@@ -93,7 +132,7 @@ export class TimeRecordFormComponent {
     setTimeout(() => {
       this.closeDialog();
     }, this.duration || 2000);
-   
+
   }
 
   showToast() {
@@ -108,10 +147,14 @@ export class TimeRecordFormComponent {
   // Calculation, co
   // ----------------------------
 
-  onDateChange() {
+  setRecordDateAndCreator() {
     // Nur Datum & Wochentag updaten, keinen Reset der ganzen record
     this.record.date = this.selectedDate.getTime();
     this.record.day = format(this.selectedDate, 'EEEE');
+    if(this.user){
+      this.record.createdBy = this.user?.lastName + ', ' + this.user?.firstName;
+    }
+   
   }
 
   setCalculationToFalse() {

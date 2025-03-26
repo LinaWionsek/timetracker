@@ -1,0 +1,88 @@
+<section class="login">
+    <!-- <div class="intro">
+      <div class="intro-content">
+        <div class="logo-container">
+          <img
+            class="logo"
+            src="../../assets/img/da_bubble_logo.png"
+            alt="da_bubble_logo"
+          />
+        </div>
+        <span class="intro-span">DABubble</span>
+      </div>
+  </div> -->
+
+    <form class="auth-form" id="login-form" #loginForm="ngForm">
+        <!-- <app-auth-header
+      title="Anmeldung"
+      info="Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+    verwendest."
+    ></app-auth-header> -->
+
+        <main class="auth-inputs">
+
+            <div class="auth-input-container">
+                <mat-form-field class="example-form-field">
+                    <mat-label>E-Mail</mat-label>
+                    <input matInput class="auth-input" type="email" placeholder="beispielname@email.com"
+                        autocomplete="username" [(ngModel)]="email" name="email" #emailInput="ngModel" required email
+                        (keydown.enter)="onEnter($event)" />
+                </mat-form-field>
+                <span class="invalid-input" [class.is-invalid]="loginFailed">
+                    Die E-Mail oder das Passwort sind falsch.
+                </span>
+            </div>
+
+            <div class="auth-input-container">
+                <mat-form-field class="example-form-field">
+                    <input matInput class="auth-input" type="password" placeholder="Passwort"
+                        autocomplete="current-password" [(ngModel)]="password" name="password" #passwordInput="ngModel"
+                        required minlength="8" [type]="_isPasswordVisible ? 'text' : 'password'"
+                        (keydown.enter)="onEnter($event)" />
+                    @if (_isPasswordVisible) {
+                    <button matSuffix mat-icon-button aria-label="Clear" (click)="togglePassword()">
+                        <mat-icon>visibility_off</mat-icon>
+                    </button>
+                    }
+                    @if (!_isPasswordVisible) {
+                    <button matSuffix mat-icon-button aria-label="Clear" (click)="togglePassword()">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                    }
+
+                </mat-form-field>
+                <span class="invalid-input" [class.is-invalid]="loginFailed">
+                    Die E-Mail oder das Passwort sind falsch.
+                </span>
+            </div>
+
+            <!-- <a routerLink="/password-reset" class="secondary-href"
+            >Passwort vergessen ?</a
+             > -->
+        </main>
+
+        <!-- <div class="divider">
+        <span class="divider-line"></span>
+        <span class="divider-text">ODER</span>
+        <span class="divider-line"></span>
+        </div> -->
+
+        <section class="auth-buttons">
+            <!-- <button (click)="loginWithGoogle()" class="auth-input google-login">
+        <img src="../../assets/img/google_icon.png" alt="google_icon" />
+        Anmeldung mit Google
+      </button> -->
+
+            <div class="auth-button-container">
+                <button [disabled]="emailInput.value == '' || password.length < 8" (click)="signIn()"
+                    class="primary-button">
+                    Anmelden
+                </button>
+                <button (click)="loginAsGuest()" class="secondary-button">
+                    Gäste-Login
+                </button>
+            </div>
+        </section>
+    </form>
+</section>
+<!-- <app-toast></app-toast> -->

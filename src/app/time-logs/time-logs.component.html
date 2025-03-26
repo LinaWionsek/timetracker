@@ -1,24 +1,32 @@
 <div class="content">
     <div class="overview-container">
         <!-- Monatsnavigation -->
+        <div class="overview-header">
+            <div>
+                <div class="cumulative-balance-container">
+                    <h2>Gesamtsaldo</h2>
+                    <div class="balance"
+                        [ngClass]="{'positive': cumulativeDifferenceMinutes >= 0, 'negative': cumulativeDifferenceMinutes < 0}">
+                        {{ getCumulativeDifferenceString() }}
+                    </div>
+                </div>
 
-        <div class="cumulative-balance-container">
-            <h2>Gesamtsaldo</h2>
-            <div class="balance"
-                [ngClass]="{'positive': cumulativeDifferenceMinutes >= 0, 'negative': cumulativeDifferenceMinutes < 0}">
-                {{ getCumulativeDifferenceString() }} 
+                <div class="month-navigation">
+                    <button mat-icon-button (click)="previousMonth()" [disabled]="!hasPreviousMonth">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                    <span class="month-heading">{{ currentMonth | date:'MMMM yyyy' }}</span>
+                    <button mat-icon-button (click)="nextMonth()" [disabled]="!hasNextMonth">
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <h2>{{user?.firstName}} {{user?.lastName}}</h2>
+                role: {{user?.role}}
             </div>
         </div>
 
-        <div class="month-navigation">
-            <button mat-icon-button (click)="previousMonth()" [disabled]="!hasPreviousMonth">
-                <mat-icon>arrow_back</mat-icon>
-              </button>
-              <span class="month-heading">{{ currentMonth | date:'MMMM yyyy' }}</span>
-              <button mat-icon-button (click)="nextMonth()" [disabled]="!hasNextMonth">
-                <mat-icon>arrow_forward</mat-icon>
-              </button>
-        </div>
 
         <div class="weekly-container mb-8">
             <h2 class="text-xl font-bold mb-4">Monatliche Zeitübersicht (Arbeitstage: {{calculateTotalWorkdays()}})</h2>
@@ -108,7 +116,8 @@
                 <!-- Break Column -->
                 <ng-container matColumnDef="break">
                     <th class="hide-on-medium-screen" mat-header-cell *matHeaderCellDef mat-sort-header>Break</th>
-                    <td class="hide-on-medium-screen" mat-cell *matCellDef="let element">{{element.breakMinutes}} minutes</td>
+                    <td class="hide-on-medium-screen" mat-cell *matCellDef="let element">{{element.breakMinutes}}
+                        minutes</td>
                     <td class="hide-on-medium-screen" mat-footer-cell *matFooterCellDef></td>
                 </ng-container>
 
@@ -121,7 +130,8 @@
 
                 <!-- At Column -->
                 <ng-container matColumnDef="at">
-                    <td class="hide-on-small-screen" mat-cell *matCellDef="let element">{{element.createdAt | date:'dd.MM.yyyy HH:mm'}}</td>
+                    <td class="hide-on-small-screen" mat-cell *matCellDef="let element">{{element.createdAt |
+                        date:'dd.MM.yyyy HH:mm'}}</td>
                     <th class="hide-on-small-screen" mat-header-cell *matHeaderCellDef mat-sort-header>At</th>
                     <td class="hide-on-small-screen" mat-footer-cell *matFooterCellDef></td>
                 </ng-container>

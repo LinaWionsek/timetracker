@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthenticationService } from '../services/authentication.service';
 
 @Component({
   selector: 'app-header',
@@ -13,5 +14,10 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  constructor(  private authService: AuthenticationService,) {}
 
+  signOut(): void {
+    this.authService.signOut();
+  }
 }
+

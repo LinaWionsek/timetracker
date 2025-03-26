@@ -3,10 +3,12 @@ export type userData = {
     firstName: string;
     lastName: string;
     email: string;
-    pendingEmail?: string;
-    avatar?: string;
-    isOnline?: boolean;
-    lastReactions?: string[];
+    role: string;
+    weeklyWorkingHours: number;
+    // pendingEmail?: string;
+    // avatar?: string;
+    // isOnline?: boolean;
+    // lastReactions?: string[];
   };
 
  export type timeRecords = {

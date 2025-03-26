@@ -1,0 +1,157 @@
+@import "./../../mixins.scss";
+@import "./../../styles";
+
+mat-form-field {
+    width: 300px !important;
+}
+
+.login {
+    @include display-flex();
+}
+
+.invalid-input {
+    @include font-style($font-size-14, $font-weight-400, red);
+    opacity: 0;
+    transition: 225ms ease-in-out;
+}
+
+.is-invalid {
+    opacity: 1;
+}
+
+
+.intro {
+    @include display-flex();
+    @include position(fixed, 0, 0, $zi: 3);
+    @include size(100vw, 100dvh);
+    //   background: linear-gradient($secondary-color-purple, $bg-color-blue);
+    transition: all 500ms ease-out;
+    animation: fade-out 500ms ease-out 2500ms forwards;
+}
+
+.intro-content {
+    @include display-flex($gap: 32px);
+    @include size($height: 100%);
+    overflow: hidden;
+    transform: translateX(200px);
+    animation: logo-slide-left 300ms ease-out 500ms forwards,
+        logo-slide-top-left 500ms ease-out 2000ms forwards;
+
+    @media only screen and (max-width: $mobile-large) {
+        animation: logo-slide-left 300ms ease-out 500ms forwards,
+            logo-slide-top-mobile 500ms ease-out 2000ms forwards;
+    }
+}
+
+.logo-container {
+    @include display-flex();
+    @include size($height: 100%);
+    min-width: 75px;
+    min-height: 75px;
+    //   background: linear-gradient($secondary-color-purple, $bg-color-blue);
+    z-index: 3;
+    animation: hide-background 500ms ease-out 2000ms forwards;
+}
+
+.intro-span {
+    @include font-style($font-size-72, $font-weight-700, white);
+    transform: translateX(-400px);
+    animation: slide-in-right 500ms ease-out 800ms forwards,
+        adjust-span-size 500ms ease-out 2000ms forwards;
+}
+
+.logo {
+    @include size($height: 200px);
+    animation: adjust-logo-size 500ms ease-out 2000ms forwards;
+
+    @media only screen and (max-width: $mobile-large) {
+        animation: adjust-logo-size-mobile 500ms ease-out 2000ms forwards;
+    }
+}
+
+.content {
+    @include display-flex($jc: space-between, $fd: column);
+    height: 100%;
+}
+
+// .divider {
+//   @include display-flex($gap: 16px);
+//   @include size(100%);
+//   > .divider-line {
+//     flex-grow: 1;
+//     height: 1px;
+//     background: purple;
+//   }
+//   > .divider-text {
+//     @include font-style($font-size-18, $font-weight-400, black);
+//     white-space: nowrap;
+//   }
+// }
+
+// .google-login {
+//   @include display-flex($gap: 16px);
+//   @include font-style($font-size-18, $font-weight-400, purple);
+//   padding: 15px 20px;
+//   > img {
+//     @include size(28px, 28px);
+//   }
+// }
+
+
+.primary-input {
+    @include input-style();
+}
+
+.secondary-input {
+    @include input-style(15px 20px);
+}
+
+.auth-form,
+.auth-verification {
+    @include display-flex($fd: column, $gap: 24px);
+    max-width: 620px;
+    padding: 32px 64px;
+    border-radius: 30px;
+    box-shadow: $primary-box-shadow;
+    background: $primary-color-white;
+}
+
+.auth-email {
+    @include font-style($font-size-18, $font-weight-700, $primary-color-purple);
+}
+
+.form-header {
+    @include display-flex($fd: column, $gap: 16px);
+    @include size(100%);
+    text-align: center;
+
+    >.header-title {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        align-self: center;
+        @include size(100%);
+
+        >.icon-container {
+            justify-self: start;
+            background: $bg-color-gray;
+        }
+
+        >h3 {
+            justify-self: center;
+            grid-column: span 1;
+            @include font-style($font-size-46,
+                $font-weight-700,
+                $primary-color-purple );
+        }
+
+        &:not(:has(.icon-container)) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    >span {
+        @include font-style($font-size-20, $font-weight-400, black);
+        text-align: center;
+    }
+}

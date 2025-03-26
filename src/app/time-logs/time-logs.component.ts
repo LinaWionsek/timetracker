@@ -16,7 +16,9 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 import { DialogDeleteRecordComponent } from '../dialog-delete-record/dialog-delete-record.component';
-
+import { AuthenticationService } from '../services/authentication.service';
+import { Subscription } from 'rxjs';
+import { User } from '../models/user.class';
 interface WeeklyData {
   weekStart: string;
   weekEnd: string;
@@ -47,16 +49,18 @@ export class TimeLogsComponent {
 
   weeklyDisplayedColumns: string[] = ['weekRange', 'actualHours', 'targetHours', 'difference'];
   weeklyDataSource = new MatTableDataSource<WeeklyData>([]);
-
+  user: User | null = null;
   // Kumulativer Stundensaldo (über alle Monate)
   cumulativeDifferenceMinutes: number = 0;
 
   // Aktuelles Datum für Monatsnavigation
   currentMonth: Date = new Date();
 
+  contractWeeklyHours: number = 0;
   // Vertraglich vereinbarte Wochenarbeitszeit in Minuten (40 Stunden)
-  contractWeeklyMinutes: number = 36 * 60;
-
+  get contractWeeklyMinutes(): number {
+    return this.contractWeeklyHours * 60;
+  }
   // Anzahl der Arbeitstage pro Woche (Mo-Fr)
   workdaysPerWeek: number = 5;
 
@@ -70,8 +74,14 @@ export class TimeLogsComponent {
 
   @ViewChild('detailSort') detailSort!: MatSort;
   @ViewChild('weeklySort') weeklySort!: MatSort;
+  authSubscription: Subscription | null = null;
 
+
+  constructor(private authService: AuthenticationService) { }
   ngOnInit() {
+
+
+
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
       this.allTimerecords = changes.map(record =>
@@ -108,6 +118,29 @@ export class TimeLogsComponent {
       this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
       this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
     });
+
+    this.authSubscription = this.authService.getUserStatus().subscribe(
+      (user) => {
+        this.user = user;
+        if (this.user) {
+          this.contractWeeklyHours = this.user.weeklyWorkingHours
+          // Wichtig: Berechnungen aktualisieren
+          this.updateWeeklyData();
+          this.calculateCumulativeDifference();
+          this.updateNavigationState();
+        }
+        console.log('user tracked', this.user);
+      },
+      (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
+    );
+
+    // this.userService.user$.subscribe((user) => {
+    //   if (user) {
+    //     this.user = user;
+    //   }
+    // });
+
+
   }
 
   previousMonth() {

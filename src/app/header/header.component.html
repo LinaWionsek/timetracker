@@ -3,9 +3,11 @@
     <span>Time Tracker</span>
     <div class="menu">
       <button mat-raised-button routerLink="/time-tracking"><mat-icon>access_time</mat-icon>Zeiterfassung</button>
+      <button routerLink="/login"></button>
       <button mat-raised-button  routerLink="/time-overview"><mat-icon>trending_up</mat-icon>Zeitübersicht</button>
     </div>
-    Logout
+    <button (click)="signOut()">Logout</button>
+    
   </div>
   
   </mat-toolbar>
