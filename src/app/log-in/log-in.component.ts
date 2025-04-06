@@ -140,34 +140,5 @@ export class LogInComponent {
   //   }
   // }
 
-  async loginAsGuest(): Promise<void> {
-    try {
-      const UserCredential = await signInAnonymously(this.auth);
-      const user = UserCredential.user;
 
-      if (user) {
-        const guestData: User = new User({
-          id: user.uid,
-          firstName: 'Guest',
-          lastName: 'User',
-          email: 'guest@example.com',
-          role: 'guest',
-          weeklyWorkingHours: 40,
-        });
-
-        // this.toastService.showToast('Gäste Login erfolgreich!');
-        await this.authService.saveUserData(
-          user.uid,
-          guestData.toPlainObject()
-        );
-        // this.authService.setOnlineStatus(true);
-
-        setTimeout(() => {
-          this.navigateToMainPage();
-        }, 1000);
-      }
-    } catch (error) {
-      console.error('Fehler beim Guest-Login:', error);
-    }
-  }
 }

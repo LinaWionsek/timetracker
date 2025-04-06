@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,10 +14,12 @@ import { AuthenticationService } from '../services/authentication.service';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  constructor(  private authService: AuthenticationService,) {}
+  constructor(  private authService: AuthenticationService,  private router: Router,) {}
 
   signOut(): void {
     this.authService.signOut();
+    this.router.navigate(['/login']);
   }
+ 
 }
 
