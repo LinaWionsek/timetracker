@@ -1,0 +1,7 @@
+@import "./../../mixins.scss";
+@import "./../../styles";
+
+section {
+    height: 100px;
+    background-color: $primary-color-blue;
+}

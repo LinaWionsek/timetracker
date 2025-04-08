@@ -5,17 +5,45 @@ mat-form-field {
     width: 300px !important;
 }
 
-.auth {
-    @include display-flex($fd: column, $jc: flex-start);
-   height: calc(100vh - 164px);
-  
+.auth-wrapper {
+    @include display-flex($fd: column, $jc: space-evenly, $ai: center);
+    height: calc(100vh - 228px);
+    padding: 64px;
 }
 
-.auth-header{
+.auth {
+    @include display-flex($fd: column, $jc: flex-start);
+    // height: calc(100vh - 164px);
+
+}
+
+.auth-header {
     @include display-flex();
-    @include size(100%);
-    height: 100px;
-    margin-bottom: 32px;
+
+    span {
+        color: $primary-color-blue;
+        font-size: 32px;
+        font-weight: bold;
+    }
+}
+
+.divider-container {
+    text-align: center;
+    position: relative;
+    display: inline-block;
+}
+
+.divider-container::after {
+    content: "";
+    display: block;
+    margin: 0.5rem auto 0;
+    /* Adds space between text and line */
+    height: 2px;
+    /* Thickness of the line */
+    background-color: black;
+    /* Line color */
+    width: 100%;
+    /* Ensures the line matches the text width */
 }
 
 .invalid-input {
@@ -32,20 +60,22 @@ mat-form-field {
 
 
 
+
 .content {
     @include display-flex($jc: space-between, $fd: column);
     height: 100%;
 }
 
 .auth-inputs {
-  @include display-flex($fd: column, $gap: 16px);
+    @include display-flex($fd: column, $gap: 16px);
 }
 
 .auth-input-container {
     @include display-flex($fd: column, $gap: 4px);
     @include size(100%);
-   
+
 }
+
 .primary-input {
     @include input-style();
 }
@@ -58,7 +88,7 @@ mat-form-field {
 .auth-verification {
     @include display-flex($fd: column, $gap: 24px);
     max-width: 620px;
-    padding: 32px 64px;
+    padding: 64px;
     border-radius: 30px;
     box-shadow: $primary-box-shadow;
     background: $primary-color-white;

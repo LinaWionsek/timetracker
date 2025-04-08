@@ -1,72 +1,76 @@
-<div class="auth-header"><h1>TIMETRACKER</h1></div>
+<div class="auth-wrapper">
+    <div class="auth-header">
+        <div class="divider-container"><span>TIMETRACKER</span></div>
+    </div>
 
-<section class="auth">
-  
-    <form class="auth-form" id="login-form" #loginForm="ngForm">
+    <section class="auth">
 
-        <main class="auth-inputs">
+        <form class="auth-form" id="login-form" #loginForm="ngForm">
 
-            <div class="auth-input-container">
-                <mat-form-field appearance="fill" subscriptSizing="dynamic">
-                    <mat-label>E-Mail</mat-label>
-                    <input matInput class="auth-input" type="email" placeholder="beispielname@email.com"
-                        autocomplete="username" [(ngModel)]="email" name="email" #emailInput="ngModel" email
-                        (keydown.enter)="onEnter($event)" />
-                </mat-form-field>
-                <span class="invalid-input" [class.is-invalid]="loginFailed">
-                    Die E-Mail oder das Passwort sind falsch.
-                </span>
-            </div>
+            <main class="auth-inputs">
 
-            <div class="auth-input-container">
-                <mat-form-field appearance="fill" subscriptSizing="dynamic">
-                    <mat-label>Passwort</mat-label>
-                    <input matInput class="auth-input" type="password" placeholder="Passwort"
-                        autocomplete="current-password" [(ngModel)]="password" name="password" #passwordInput="ngModel"
-                         minlength="8" [type]="_isPasswordVisible ? 'text' : 'password'"
-                        (keydown.enter)="onEnter($event)" />
-                    @if (_isPasswordVisible) {
-                    <button matSuffix mat-icon-button aria-label="Clear" (click)="togglePassword()">
-                        <mat-icon>visibility_off</mat-icon>
+                <div class="auth-input-container">
+                    <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                        <mat-label>E-Mail</mat-label>
+                        <input matInput class="auth-input" type="email" placeholder="beispielname@email.com"
+                            autocomplete="username" [(ngModel)]="email" name="email" #emailInput="ngModel" email
+                            (keydown.enter)="onEnter($event)" />
+                    </mat-form-field>
+                    <span class="invalid-input" [class.is-invalid]="loginFailed">
+                        Die E-Mail oder das Passwort sind falsch.
+                    </span>
+                </div>
+
+                <div class="auth-input-container">
+                    <mat-form-field appearance="fill" subscriptSizing="dynamic">
+                        <mat-label>Passwort</mat-label>
+                        <input matInput class="auth-input" type="password" placeholder="Passwort"
+                            autocomplete="current-password" [(ngModel)]="password" name="password"
+                            #passwordInput="ngModel" minlength="8" [type]="_isPasswordVisible ? 'text' : 'password'"
+                            (keydown.enter)="onEnter($event)" />
+                        @if (_isPasswordVisible) {
+                        <button matSuffix mat-icon-button aria-label="Clear" (click)="togglePassword()">
+                            <mat-icon>visibility_off</mat-icon>
+                        </button>
+                        }
+                        @if (!_isPasswordVisible) {
+                        <button matSuffix mat-icon-button aria-label="Clear" (click)="togglePassword()">
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                        }
+
+                    </mat-form-field>
+                    <span class="invalid-input" [class.is-invalid]="loginFailed">
+                        Die E-Mail oder das Passwort sind falsch.
+                    </span>
+                </div>
+
+                <!-- <a routerLink="/password-reset" class="secondary-href"
+                >Passwort vergessen ?</a
+                 > -->
+            </main>
+
+            <!-- <div class="divider">
+            <span class="divider-line"></span>
+            <span class="divider-text">ODER</span>
+            <span class="divider-line"></span>
+            </div> -->
+
+            <section class="auth-buttons">
+                <!-- <button (click)="loginWithGoogle()" class="auth-input google-login">
+            <img src="../../assets/img/google_icon.png" alt="google_icon" />
+            Anmeldung mit Google
+          </button> -->
+
+                <div class="auth-button-container">
+                    <button mat-raised-button color="primary" [disabled]="emailInput.value == '' || password.length < 8"
+                        (click)="signIn()" class="primary-button">
+                        Anmelden
                     </button>
-                    }
-                    @if (!_isPasswordVisible) {
-                    <button matSuffix mat-icon-button aria-label="Clear" (click)="togglePassword()">
-                        <mat-icon>visibility</mat-icon>
-                    </button>
-                    }
 
-                </mat-form-field>
-                <span class="invalid-input" [class.is-invalid]="loginFailed">
-                    Die E-Mail oder das Passwort sind falsch.
-                </span>
-            </div>
-
-            <!-- <a routerLink="/password-reset" class="secondary-href"
-            >Passwort vergessen ?</a
-             > -->
-        </main>
-
-        <!-- <div class="divider">
-        <span class="divider-line"></span>
-        <span class="divider-text">ODER</span>
-        <span class="divider-line"></span>
-        </div> -->
-
-        <section class="auth-buttons">
-            <!-- <button (click)="loginWithGoogle()" class="auth-input google-login">
-        <img src="../../assets/img/google_icon.png" alt="google_icon" />
-        Anmeldung mit Google
-      </button> -->
-
-            <div class="auth-button-container">
-                <button [disabled]="emailInput.value == '' || password.length < 8" (click)="signIn()"
-                    class="primary-button">
-                    Anmelden
-                </button>
-              
-            </div>
-        </section>
-    </form>
-</section>
-<!-- <app-toast></app-toast> -->
+                </div>
+            </section>
+        </form>
+    </section>
+    <!-- <app-toast></app-toast> -->
+</div>
