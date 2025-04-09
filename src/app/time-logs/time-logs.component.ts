@@ -3,6 +3,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Timerecords } from '../models/timerecords.class';
+import { DailyLogsComponent } from '../daily-logs/daily-logs.component';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, ViewChild, inject } from '@angular/core';
@@ -14,8 +15,6 @@ import {
   isWithinInterval, getISOWeek, addDays, getDay
 } from 'date-fns';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
-import { DialogDeleteRecordComponent } from '../dialog-delete-record/dialog-delete-record.component';
 import { AuthenticationService } from '../services/authentication.service';
 import { Subscription } from 'rxjs';
 import { User } from '../models/user.class';
@@ -37,7 +36,7 @@ interface WeeklyData {
 @Component({
   selector: 'app-time-logs',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule, MatIconModule, MatButtonModule, DailyLogsComponent],
   templateUrl: './time-logs.component.html',
   styleUrl: './time-logs.component.scss'
 })
@@ -45,8 +44,7 @@ export class TimeLogsComponent {
   private _liveAnnouncer = inject(LiveAnnouncer);
   dataStoreService = inject(DataStoreServiceService);
   allTimerecords: Timerecords[] = [];
-  displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
-
+  // displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
   weeklyDisplayedColumns: string[] = ['weekRange', 'actualHours', 'targetHours', 'difference'];
   weeklyDataSource = new MatTableDataSource<WeeklyData>([]);
   user: User | null = null;
@@ -70,18 +68,12 @@ export class TimeLogsComponent {
   }
 
   dialog = inject(MatDialog);
-  dataSource = new MatTableDataSource(this.allTimerecords);
-
-  @ViewChild('detailSort') detailSort!: MatSort;
   @ViewChild('weeklySort') weeklySort!: MatSort;
   authSubscription: Subscription | null = null;
 
 
   constructor(private authService: AuthenticationService) { }
   ngOnInit() {
-
-
-
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
       this.allTimerecords = changes.map(record =>
@@ -91,8 +83,6 @@ export class TimeLogsComponent {
           createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
         })
       );
-
-      this.dataSource.data = this.allTimerecords;
 
       // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
       if (!this.hasEntriesInMonth(this.currentMonth)) {
@@ -140,7 +130,6 @@ export class TimeLogsComponent {
     //   }
     // });
 
-
   }
 
   previousMonth() {
@@ -183,7 +172,6 @@ export class TimeLogsComponent {
     // Start- und Enddatum des Monats
     const firstDayOfMonth = startOfMonth(month);
     const lastDayOfMonth = endOfMonth(month);
-
     // Alle Wochen im Monat ermitteln
     const weeksInMonth = eachWeekOfInterval(
       { start: firstDayOfMonth, end: lastDayOfMonth },
@@ -192,18 +180,14 @@ export class TimeLogsComponent {
 
     return weeksInMonth.map(weekStart => {
       const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-
       // Berechnen der Arbeitstage dieser Woche, die im aktuellen Monat liegen
       const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-
       // Filter nur Arbeitstage (Mo-Fr) im aktuellen Monat
       const workdaysInMonth = weekDays.filter(day =>
         this.isWorkday(day) && isSameMonth(day, month)
       ).length;
-
       // Wochen-Soll für diesen Monat = Tägliche Sollzeit * Anzahl Arbeitstage im Monat
       const targetMinutes = workdaysInMonth * this.dailyTargetMinutes;
-
       // Einträge für diese Woche finden, die im aktuellen Monat liegen
       const weekRecords = records.filter(record => {
         const recordDate = new Date(record.date);
@@ -224,7 +208,6 @@ export class TimeLogsComponent {
 
       // Differenz berechnen
       const differenceMinutes = totalMinutes - targetMinutes;
-
       return {
         weekNumber: getISOWeek(weekStart),
         weekStart: format(weekStart, 'dd.MM.yyyy'),
@@ -279,9 +262,8 @@ export class TimeLogsComponent {
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.detailSort;
+    // this.dataSource.sort = this.detailSort;
     this.weeklyDataSource.sort = this.weeklySort;
-
     this.weeklyDataSource.sortingDataAccessor = (item, property) => {
       if (property === 'weekRange') {
         return item.weekStartDate.getTime();
@@ -295,18 +277,6 @@ export class TimeLogsComponent {
       // Typensichere Lösung ohne string-indizierung
       return 0;
     };
-
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'date': return item.date;
-        case 'time': return item.startTime;
-        case 'break': return item.breakMinutes;
-        case 'duration': return item.timeWorked;
-        case 'by': return item.createdBy;
-        case 'at': return item.createdAt;
-        default: return '';
-      }
-    };
   }
 
   announceSortChange(sortState: Sort) {
@@ -317,35 +287,10 @@ export class TimeLogsComponent {
     }
   }
 
-  edit(timerecord: Timerecords) {
-    const dialog = this.dialog.open(DialogEditRecordComponent);
-    dialog.componentInstance.timerecord = new Timerecords(timerecord);
-    dialog.afterClosed().subscribe(() => {
-      this.updateWeeklyData();
-    });
-  }
-
-  delete(timerecord: Timerecords) {
-    const dialog = this.dialog.open(DialogDeleteRecordComponent);
-    dialog.componentInstance.timerecord = new Timerecords(timerecord);
-    dialog.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.dataStoreService.deleteTimerecord(timerecord);
-        this.updateWeeklyData();
-      }
-    });
-  }
-
-
-
-
-
-
   // Berechnet den Gesamtsaldo über alle Zeiteinträge hinweg
   calculateCumulativeDifference() {
     const allWorkdays = this.getAllWorkdaysSinceStart();
     const totalTargetMinutes = allWorkdays.length * this.dailyTargetMinutes;
-
     // Summe aller tatsächlich gearbeiteten Minuten
     let totalWorkedMinutes = 0;
     this.allTimerecords.forEach(record => {
@@ -356,7 +301,6 @@ export class TimeLogsComponent {
       }
       totalWorkedMinutes += (minutes || 0);
     });
-
     this.cumulativeDifferenceMinutes = totalWorkedMinutes - totalTargetMinutes;
   }
 
@@ -368,30 +312,24 @@ export class TimeLogsComponent {
     const dates = this.allTimerecords.map(r => new Date(r.date));
     const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const endDate = new Date(Math.max(...dates.map(d => d.getTime())));
-
     // Auf den ersten Tag des Monats setzen für Start
     const firstDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
     const lastDay = endDate;
-
     // Alle Arbeitstage im Zeitraum ermitteln
     const allWorkdays: Date[] = [];
     let currentDay = firstDay;
-
     while (currentDay <= lastDay) {
       if (this.isWorkday(currentDay)) {
         allWorkdays.push(new Date(currentDay));
       }
       currentDay = addDays(currentDay, 1);
     }
-
     return allWorkdays;
   }
-
 
   getCumulativeDifferenceString(): string {
     return this.minutesToDifferenceString(this.cumulativeDifferenceMinutes);
   }
-
 
 
   ///////////////////////Naviagtion////////////////////////////////////////
@@ -443,8 +381,4 @@ export class TimeLogsComponent {
   hasNextMonth: boolean = false;
   hasPreviousMonth: boolean = false;
 
-
-
 }
-
-

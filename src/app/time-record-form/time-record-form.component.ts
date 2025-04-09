@@ -194,12 +194,12 @@ export class TimeRecordFormComponent {
     const timeWithoutBreak = workingTimeInMinutes;
     const whours = Math.floor(timeWithoutBreak / 60);
     const wminutes = timeWithoutBreak % 60;
-    this.record.timeWithoutBreak = `${whours} hours and ${wminutes} minutes`;
+    this.record.timeWithoutBreak = `${whours} hours, ${wminutes} minutes`;
 
     const actualWorkingTime = workingTimeInMinutes - (this.record.breakMinutes || 0);
     const thours = Math.floor(actualWorkingTime / 60);
     const tminutes = actualWorkingTime % 60;
-    this.record.timeWorked = `${thours} hours and ${tminutes} minutes`;
+    this.record.timeWorked = `${thours} hours, ${tminutes} minutes`;
     this.record.totalMinutes = actualWorkingTime;
 
     this.calculationFinished = true;

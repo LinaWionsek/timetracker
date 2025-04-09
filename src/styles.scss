@@ -54,3 +54,46 @@ $desktop: 960px;
 $tablet: 768px;
 $mobile-large: 640px;
 $mobile: 480px;
+
+
+.mat-mdc-row:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+.mat-mdc-row:hover {
+    background-color: #eeeeee;
+}
+
+.mat-mdc-cell {
+    padding: 8px 16px;
+}
+
+
+@media (max-width: 780px) {
+
+    .mat-mdc-cell,
+    .mat-mdc-header-cell,
+    .mat-mdc-footer-cell {
+        padding: 8px 12px !important;
+    }
+
+    .hide-on-medium-screen {
+        display: none !important;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .mat-mdc-cell,
+    .mat-mdc-header-cell,
+    .mat-mdc-footer-cell {
+        padding: 4px 8px !important;
+
+    }
+
+    .hide-on-small-screen {
+        display: none !important;
+    }
+
+
+}
