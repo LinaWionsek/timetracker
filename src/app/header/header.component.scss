@@ -2,7 +2,9 @@
 @import "./../../styles";
 
 
-
+mat-toolbar {
+    height: 80px;
+}
 
 .menu-container {
     @include display-flex($jc: space-between);

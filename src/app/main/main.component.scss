@@ -4,10 +4,9 @@
 
 
 .content {
-  @include display-flex($ai: flex-start);
-  @include size(100%, 100%);
-  // padding: 64px;
-  // background-color: #f1f4fe;
+  @include display-flex($ai: flex-start, $gap: 32px);
+  padding: 48px;
+  height: calc(100vh - 160px)
 }
 
 
