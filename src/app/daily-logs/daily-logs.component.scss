@@ -13,6 +13,7 @@
   
     &:hover {
       background-color: hsla(206, 100%, 73%, 0.432);
+
       cursor: pointer;
     }
   }
@@ -22,7 +23,6 @@
     width: 16px;
     height: 16px;
     line-height: 16px;
-  }
-  
+    color: $primary-color-blue;
 
-  
+  }

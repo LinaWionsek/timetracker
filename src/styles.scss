@@ -8,7 +8,8 @@ body {
 body {
     margin: 0;
     font-family: Roboto, "Helvetica Neue", sans-serif;
-    background-color: #f1f4fe;
+    // background-color: #f1f4fe;
+    background-color: #ffffff;
 }
 
 $primary-color-blue: #3f51b5;
@@ -67,6 +68,73 @@ $mobile: 480px;
 .mat-mdc-cell {
     padding: 8px 16px;
 }
+
+
+
+
+
+
+/* Globale Styles für MDC-basierte Material Tables */
+
+.mat-mdc-table {
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03); 
+    // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    // box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: none;
+    // border: 1px solid #e5e7eb;
+    // border-radius: 12px;
+}
+
+.mat-mdc-header-row {
+    // background-color: #EAF0F7; //org
+    background-color: #e3f2fd;
+    font-weight: 500;
+    color: #404B59;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell,
+.mat-mdc-footer-cell {
+    padding: 16px 20px;
+
+}
+
+// Nur für Header + normale Zeilen: border-bottom
+.mat-mdc-header-cell,
+.mat-mdc-cell {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+// Alternierende Zeilenfarbe (Zebra)
+.mat-mdc-row:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.mat-mdc-row:hover {
+    
+    // background-color: #EAF0F7; //org
+    background-color: #daedfc; //modified
+    transition: background-color 0.2s ease;
+}
+
+
+
+// Footer-Row
+.mat-mdc-footer-row {
+    background-color: #f9fafb;
+    font-weight: 500;
+    color: #1f2937;
+}
+
+
 
 
 @media (max-width: 780px) {
