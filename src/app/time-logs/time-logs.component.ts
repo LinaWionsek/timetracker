@@ -18,7 +18,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AuthenticationService } from '../services/authentication.service';
 import { Subscription } from 'rxjs';
 import { User } from '../models/user.class';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
 import { MonthlyStatsComponent } from '../monthly-stats/monthly-stats.component';
 interface WeeklyData {
   weekStart: string;
@@ -74,9 +74,8 @@ export class TimeLogsComponent {
   @ViewChild('weeklySort') weeklySort!: MatSort;
   authSubscription: Subscription | null = null;
 
-  selectedUserId: string  = '';
+  selectedUserId: string = '';
   selectedUser: User | null = null;
-  recordsForSelectedUser: Timerecords[] = [];
 
   constructor(private authService: AuthenticationService) { }
   ngOnInit() {
@@ -121,8 +120,8 @@ export class TimeLogsComponent {
         if (this.user) {
           if (this.isAdmin()) {
             this.selectedUserId = '';
-        
-          
+
+
           } else {
             this.selectedUserId = this.user.id;
             this.selectedUser = this.user;
@@ -134,12 +133,12 @@ export class TimeLogsComponent {
           this.updateNavigationState();
 
 
-            this.dataStoreService.getAllUsers().subscribe(users => {
-              this.allUsers = users;
-              if (this.isAdmin() && this.selectedUserId) {
-                this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
-              }
-            });
+          this.dataStoreService.getAllUsers().subscribe(users => {
+            this.allUsers = users;
+            if (this.isAdmin() && this.selectedUserId) {
+              this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
+            }
+          });
         }
         console.log('user tracked', this.user);
       },
@@ -153,20 +152,15 @@ export class TimeLogsComponent {
     // });
 
   }
-isAdmin(): boolean {
-  return this.user?.role === 'admin';
-}
-
-onUserSelected() {
-  this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
-  if (this.selectedUser) {
-    this.recordsForSelectedUser = this.getRecordsForUser(this.selectedUser.id);
+  isAdmin(): boolean {
+    return this.user?.role === 'admin';
   }
-}
 
-getRecordsForUser(userId: string): Timerecords[] {
-  return this.allTimerecords.filter(record => record.createdById === userId);
-}
+  onUserSelected() {
+    this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
+  }
+
+
   previousMonth() {
     const prevMonth = this.findPreviousMonthWithEntries(this.currentMonth);
     if (prevMonth) {
