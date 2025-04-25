@@ -1,25 +1,15 @@
+import { Component, inject, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { Timerecords } from '../models/timerecords.class';
-import { DailyLogsComponent } from '../daily-logs/daily-logs.component';
-import { DataStoreServiceService } from '../services/data-store-service.service';
-import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, ViewChild, inject } from '@angular/core';
-import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import {
-  startOfWeek, endOfWeek, format,
-  startOfMonth, endOfMonth, eachWeekOfInterval, isSameMonth,
-  isWithinInterval, getISOWeek, addDays, getDay
-} from 'date-fns';
-import { MatDialog } from '@angular/material/dialog';
-import { AuthenticationService } from '../services/authentication.service';
-import { Subscription } from 'rxjs';
 import { User } from '../models/user.class';
-import {MatSelectModule} from '@angular/material/select';
-import { MonthlyStatsComponent } from '../monthly-stats/monthly-stats.component';
+import { Timerecords } from '../models/timerecords.class';
+import { addDays, eachWeekOfInterval, endOfMonth, endOfWeek, format, getDay, getISOWeek, isSameMonth, isWithinInterval, startOfMonth } from 'date-fns';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { MatIconModule } from '@angular/material/icon';
+
+
 interface WeeklyData {
   weekStart: string;
   weekEnd: string;
@@ -35,21 +25,26 @@ interface WeeklyData {
   workdaysInMonth: number;
 }
 
+
 @Component({
-  selector: 'app-time-logs',
+  selector: 'app-monthly-stats',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatSortModule, MatSelectModule, MatIconModule, MatButtonModule, DailyLogsComponent, MonthlyStatsComponent],
-  templateUrl: './time-logs.component.html',
-  styleUrl: './time-logs.component.scss'
+  imports: [CommonModule, MatIconModule, MatTableModule, MatSortModule],
+  templateUrl: './monthly-stats.component.html',
+  styleUrl: './monthly-stats.component.scss'
 })
-export class TimeLogsComponent {
+export class MonthlyStatsComponent {
+  @Input() user!: User;
+  @Input() records: Timerecords[] = [];
+
+
   private _liveAnnouncer = inject(LiveAnnouncer);
-  dataStoreService = inject(DataStoreServiceService);
-  allTimerecords: Timerecords[] = [];
+  // dataStoreService = inject(DataStoreServiceService);
+  // allTimerecords: Timerecords[] = [];
   // displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
   weeklyDisplayedColumns: string[] = ['weekRange', 'actualHours', 'targetHours', 'difference'];
   weeklyDataSource = new MatTableDataSource<WeeklyData>([]);
-  user: User | null = null;
+  // user: User | null = null;
   allUsers: User[] = [];
   // Kumulativer Stundensaldo (über alle Monate)
   cumulativeDifferenceMinutes: number = 0;
@@ -72,24 +67,13 @@ export class TimeLogsComponent {
 
   dialog = inject(MatDialog);
   @ViewChild('weeklySort') weeklySort!: MatSort;
-  authSubscription: Subscription | null = null;
+  // authSubscription: Subscription | null = null;
 
-  selectedUserId: string  = '';
-  selectedUser: User | null = null;
-  recordsForSelectedUser: Timerecords[] = [];
+  // selectedUserId: string | null = null;
+  // selectedUser: User | null = null;
 
-  constructor(private authService: AuthenticationService) { }
+  // constructor(private authService: AuthenticationService) { }
   ngOnInit() {
-    this.dataStoreService.getTimerecords();
-    this.dataStoreService.timerecords$.subscribe((changes) => {
-      this.allTimerecords = changes.map(record =>
-        Timerecords.fromJSON({
-          ...record,
-          date: typeof record.date === 'number' ? record.date : Number(record.date),
-          createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
-        })
-      );
-      console.log('Nach fromJSON:', this.allTimerecords);
       // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
       if (!this.hasEntriesInMonth(this.currentMonth)) {
         const currentMonth = new Date();
@@ -109,64 +93,38 @@ export class TimeLogsComponent {
           }
         }
       }
-
+      this.contractWeeklyHours = this.user.weeklyWorkingHours;
       this.updateWeeklyData();
       this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
       this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
-    });
+    }
 
-    this.authSubscription = this.authService.getUserStatus().subscribe(
-      (user) => {
-        this.user = user;
-        if (this.user) {
-          if (this.isAdmin()) {
-            this.selectedUserId = '';
-        
-          
-          } else {
-            this.selectedUserId = this.user.id;
-            this.selectedUser = this.user;
-          }
-          this.contractWeeklyHours = this.user.weeklyWorkingHours
-          // Wichtig: Berechnungen aktualisieren
-          this.updateWeeklyData();
-          this.calculateCumulativeDifference();
-          this.updateNavigationState();
+    
+      
+    ngOnChanges(changes: SimpleChanges) {
+    if (changes['user']) {
+      console.log('User hat sich geändert!', this.user);
 
-
-            this.dataStoreService.getAllUsers().subscribe(users => {
-              this.allUsers = users;
-              if (this.isAdmin() && this.selectedUserId) {
-                this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
-              }
-            });
-        }
-        console.log('user tracked', this.user);
-      },
-      (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
-    );
-
-    // this.userService.user$.subscribe((user) => {
-    //   if (user) {
-    //     this.user = user;
-    //   }
-    // });
-
+      // WENN User sich ändert: Tabelle neu aufbauen
+      this.contractWeeklyHours = this.user.weeklyWorkingHours;
+      this.updateWeeklyData();
+      this.calculateCumulativeDifference();
+      this.updateNavigationState();
+    }
+    if (changes['records']) {
+      console.log('Records geändert:', this.records);// falls records sich ändern (kann später wichtig werden)
+      this.updateWeeklyData();
+      this.calculateCumulativeDifference();
+      this.updateNavigationState();
+    }
   }
-isAdmin(): boolean {
-  return this.user?.role === 'admin';
-}
 
-onUserSelected() {
-  this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
-  if (this.selectedUser) {
-    this.recordsForSelectedUser = this.getRecordsForUser(this.selectedUser.id);
+  
+
+
+  isAdmin(): boolean {
+    return this.user?.role === 'admin';
   }
-}
-
-getRecordsForUser(userId: string): Timerecords[] {
-  return this.allTimerecords.filter(record => record.createdById === userId);
-}
   previousMonth() {
     const prevMonth = this.findPreviousMonthWithEntries(this.currentMonth);
     if (prevMonth) {
@@ -192,7 +150,8 @@ getRecordsForUser(userId: string): Timerecords[] {
   }
 
   updateWeeklyData() {
-    const monthlyWeeklyData = this.getMonthlyWeeklyData(this.currentMonth, this.allTimerecords);
+    const recordsForUser = this.records.filter(record => record.createdById === this.user.id);
+    const monthlyWeeklyData = this.getMonthlyWeeklyData(this.currentMonth, recordsForUser);
     this.weeklyDataSource.data = monthlyWeeklyData;
   }
 
@@ -328,7 +287,7 @@ getRecordsForUser(userId: string): Timerecords[] {
     const totalTargetMinutes = allWorkdays.length * this.dailyTargetMinutes;
     // Summe aller tatsächlich gearbeiteten Minuten
     let totalWorkedMinutes = 0;
-    this.allTimerecords.forEach(record => {
+    this.records.forEach(record => {
       let minutes = record.totalMinutes;
       if (!minutes && record.timeWorked) {
         const [hours, mins] = record.timeWorked.split(':').map(Number);
@@ -341,10 +300,10 @@ getRecordsForUser(userId: string): Timerecords[] {
 
   // Ermittelt alle Arbeitstage seit Beginn der Zeiterfassung
   getAllWorkdaysSinceStart(): Date[] {
-    if (this.allTimerecords.length === 0) return [];
+    if (this.records.length === 0) return [];
 
     // Frühestes und spätestes Datum finden
-    const dates = this.allTimerecords.map(r => new Date(r.date));
+    const dates = this.records.map(r => new Date(r.date));
     const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const endDate = new Date(Math.max(...dates.map(d => d.getTime())));
     // Auf den ersten Tag des Monats setzen für Start
@@ -362,9 +321,9 @@ getRecordsForUser(userId: string): Timerecords[] {
     return allWorkdays;
   }
 
-  // getCumulativeDifferenceString(): string {
-  //   return this.minutesToDifferenceString(this.cumulativeDifferenceMinutes);
-  // }
+  getCumulativeDifferenceString(): string {
+    return this.minutesToDifferenceString(this.cumulativeDifferenceMinutes);
+  }
 
 
   ///////////////////////Naviagtion////////////////////////////////////////
@@ -375,7 +334,7 @@ getRecordsForUser(userId: string): Timerecords[] {
     const firstDayOfMonth = startOfMonth(month);
     const lastDayOfMonth = endOfMonth(month);
 
-    return this.allTimerecords.some(record => {
+    return this.records.some(record => {
       const recordDate = new Date(record.date);
       return recordDate >= firstDayOfMonth && recordDate <= lastDayOfMonth &&
         (record.totalMinutes > 0 || (record.timeWorked && record.timeWorked !== '0:00'));
@@ -415,5 +374,10 @@ getRecordsForUser(userId: string): Timerecords[] {
   // Properties für Button-Deaktivierung
   hasNextMonth: boolean = false;
   hasPreviousMonth: boolean = false;
+
+
+
+
+
 
 }

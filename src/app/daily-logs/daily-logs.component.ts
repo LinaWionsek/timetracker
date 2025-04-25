@@ -52,7 +52,7 @@ export class DailyLogsComponent {
         case 'time': return item.startTime;
         case 'break': return item.breakMinutes;
         case 'duration': return item.timeWorked;
-        case 'by': return item.createdBy;
+        case 'by': return item.createdByName;
         case 'at': return item.createdAt;
         default: return '';
       }

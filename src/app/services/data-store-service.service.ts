@@ -15,6 +15,9 @@ import {
   deleteDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { User } from '../models/user.class';
+import { map } from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +37,19 @@ export class DataStoreServiceService {
     await addDoc(collection(this.firestore, 'timerecords'), daten.toJSON())
       .catch((err) => { console.log(err) })
       .then((docRef) => { console.log('Document written with ID: ', docRef?.id); });
+  }
+
+
+  //.pipe() heißt: "Bevor ich die Daten weitergebe, will ich noch etwas damit machen."
+  // Map: Für jedes Dokument (User-Datensatz) ...
+  //... baue eine neue Instanz deiner eigenen User-Klasse daraus!
+
+
+  getAllUsers() {
+    const usersRef = collection(this.firestore, 'users');
+    return collectionData(usersRef, { idField: 'id' }).pipe(
+      map(data => data.map(user => new User(user as User)))
+    );
   }
 
   getTimerecords() {

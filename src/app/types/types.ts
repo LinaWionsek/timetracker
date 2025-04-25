@@ -20,8 +20,9 @@ export type userData = {
     timeWorked?: string;
     timeWithoutBreak?: string;
     breakMinutes: number;
-    totalMinutes?: number
-    createdBy: string;
+    totalMinutes?: number;
+    createdById: string;
+    createdByName: string;
     createdAt: number;
  } 
   

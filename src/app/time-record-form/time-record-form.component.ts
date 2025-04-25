@@ -152,7 +152,9 @@ export class TimeRecordFormComponent {
     this.record.date = this.selectedDate.getTime();
     this.record.day = format(this.selectedDate, 'EEEE');
     if(this.user){
-      this.record.createdBy = this.user?.lastName + ', ' + this.user?.firstName;
+      this.record.createdByName = this.user?.lastName + ', ' + this.user?.firstName;
+      this.record.createdById = this.user.id;
+      console.log('createdById', this.record.createdById);
     }
    
   }

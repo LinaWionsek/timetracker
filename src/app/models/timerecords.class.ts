@@ -9,7 +9,8 @@ export class Timerecords {
     public timeWithoutBreak: string;
     public breakMinutes: number;
     public totalMinutes: number;
-    public createdBy: string;
+    public createdById: string; 
+    public createdByName: string;
     public createdAt: number;
     
     constructor(init?: Partial<Timerecords>) {
@@ -22,7 +23,8 @@ export class Timerecords {
         this.timeWithoutBreak = init?.timeWithoutBreak || '';
         this.breakMinutes = init?.breakMinutes || 0;
         this.totalMinutes = init?.totalMinutes || 0;
-        this.createdBy = init?.createdBy || 'Dummy User';
+        this.createdById = init?.createdById || '';
+        this.createdByName = init?.createdByName || 'Dummy User';
         this.createdAt = init?.createdAt || Date.now();
     }
 
@@ -37,7 +39,8 @@ export class Timerecords {
             timeWithoutBreak: obj.timeWithoutBreak || '',
             breakMinutes: obj.breakMinutes || 0,
             totalMinutes: obj.totalMinutes || 0,
-            createdBy: obj.createdBy || 'Dummy User',
+            createdById: obj.createdById || '',
+            createdByName: obj.createdByName || 'Dummy User',
             createdAt: typeof obj.createdAt === 'number' ? obj.createdAt : Date.now()
         });
     }
@@ -56,7 +59,8 @@ export class Timerecords {
             timeWithoutBreak: this.timeWithoutBreak,
             breakMinutes: this.breakMinutes,
             totalMinutes: this.totalMinutes,
-            createdBy: this.createdBy,
+            createdById: this.createdById,
+            createdByName: this.createdByName,
             createdAt: this.createdAt
         };
     }
