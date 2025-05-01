@@ -103,8 +103,6 @@ export class MonthlyStatsComponent {
       
     ngOnChanges(changes: SimpleChanges) {
     if (changes['user']) {
-      console.log('User hat sich geändert!', this.user);
-
       // WENN User sich ändert: Tabelle neu aufbauen
       this.contractWeeklyHours = this.user.weeklyWorkingHours;
       this.updateWeeklyData();

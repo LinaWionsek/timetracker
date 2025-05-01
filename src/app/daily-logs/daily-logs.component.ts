@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -9,6 +9,7 @@ import { DialogDeleteRecordComponent } from '../dialog-delete-record/dialog-dele
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { User } from '../models/user.class';
 
 
 
@@ -29,19 +30,22 @@ export class DailyLogsComponent {
   dialog = inject(MatDialog);
   displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
   @ViewChild('detailSort') detailSort!: MatSort;
-
+  @Input() user!: User;
+  @Input() records: Timerecords[] = [];
+  
   ngOnInit() {
-    this.dataStoreService.getTimerecords();
-    this.dataStoreService.timerecords$.subscribe((changes) => {
-      this.allTimerecords = changes.map(record =>
-        Timerecords.fromJSON({
-          ...record,
-          date: typeof record.date === 'number' ? record.date : Number(record.date),
-          createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
-        })
-      );
-      this.dataSource.data = this.allTimerecords;
-    });
+    this.updateDataSource();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['user'] || changes['records']) {
+      this.updateDataSource();
+    }
+  }
+
+  updateDataSource() {
+    const recordsForUser = this.records.filter(record => record.createdById === this.user.id);
+    this.dataSource.data = recordsForUser;
   }
 
   ngAfterViewInit() {

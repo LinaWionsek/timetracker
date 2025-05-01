@@ -10,10 +10,10 @@
             </mat-select>
         </mat-form-field>
 
-        <app-monthly-stats *ngIf="selectedUser" [user]="selectedUser" [records]="allTimerecords">
+        <app-monthly-stats *ngIf="selectedUser  && allTimerecords.length > 0" [user]="selectedUser" [records]="allTimerecords">
         </app-monthly-stats>
 
-        <app-daily-logs></app-daily-logs>
+        <app-daily-logs *ngIf="selectedUser && allTimerecords.length > 0" [user]="selectedUser"  [records]="allTimerecords"></app-daily-logs>
 
 
     </div>
