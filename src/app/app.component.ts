@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
-
+import { AuthenticationService } from './services/authentication.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -15,7 +16,12 @@ export class AppComponent {
   title = 'timetracker';
   showHeader: boolean = true;
 
-  constructor(private router: Router) {
+  authChecked = toSignal(
+    this.authService.getAuthChecked(),
+    { initialValue: false }
+  );
+
+  constructor(private router: Router, private authService: AuthenticationService) {
     // Überprüfen der Route bei jeder Navigation
     this.router.events.subscribe((event) => {
       //Jedes Mal, wenn eine Navigation abgeschlossen wird (NavigationEnd),

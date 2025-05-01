@@ -88,7 +88,7 @@ export class TimeLogsComponent {
           createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
         })
       );
-      console.log('Nach fromJSON:', this.allTimerecords);
+     
       // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
       if (!this.hasEntriesInMonth(this.currentMonth)) {
         const currentMonth = new Date();
@@ -118,14 +118,16 @@ export class TimeLogsComponent {
       (user) => {
         this.user = user;
         if (this.user) {
-          if (this.isAdmin()) {
-            this.selectedUserId = '';
+          this.selectedUserId = this.user.id;
+          this.selectedUser = this.user;
+          // if (this.isAdmin()) {
+          //   this.selectedUserId = '';
 
 
-          } else {
-            this.selectedUserId = this.user.id;
-            this.selectedUser = this.user;
-          }
+          // } else {
+          //   this.selectedUserId = this.user.id;
+          //   this.selectedUser = this.user;
+          // }
           this.contractWeeklyHours = this.user.weeklyWorkingHours
           // Wichtig: Berechnungen aktualisieren
           this.updateWeeklyData();
@@ -140,7 +142,7 @@ export class TimeLogsComponent {
             }
           });
         }
-        console.log('user tracked', this.user);
+        // console.log('user tracked', this.user);
       },
       (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
     );

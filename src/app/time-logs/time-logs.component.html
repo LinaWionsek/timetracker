@@ -1,14 +1,17 @@
 <div class="content">
     <div class="overview-container">
 
-        <mat-form-field appearance="outline">
-            <mat-label>Benutzer auswählen</mat-label>
-            <mat-select [(value)]="selectedUserId" (selectionChange)="onUserSelected()">
-                <mat-option *ngFor="let user of allUsers" [value]="user.id">
-                    {{ user.firstName }} {{ user.lastName }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+        @if (user?.role === 'admin') {
+            <mat-form-field appearance="outline">
+                <mat-label>Benutzer auswählen</mat-label>
+                <mat-select [(value)]="selectedUserId" (selectionChange)="onUserSelected()">
+                    <mat-option *ngFor="let user of allUsers" [value]="user.id">
+                        {{ user.firstName }} {{ user.lastName }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        }
+ 
 
         <app-monthly-stats *ngIf="selectedUser  && allTimerecords.length > 0" [user]="selectedUser" [records]="allTimerecords">
         </app-monthly-stats>

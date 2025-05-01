@@ -1,10 +1,18 @@
-@if (showHeader){
-    <app-header></app-header>
-    <div class="wrapper">
-        <router-outlet></router-outlet>
-    </div>
+@if (!authChecked()) {
+    <div class="loading-screen">Lade Benutzerstatus...</div>
 } @else {
-    <router-outlet></router-outlet>
+
+    @if (showHeader){
+        <app-header></app-header>
+        <div class="wrapper">
+            <router-outlet></router-outlet>
+        </div>
+    } @else {
+        <router-outlet></router-outlet>
+    }
+    <app-footer></app-footer>
 }
-<app-footer></app-footer>
+
+
+
     

@@ -110,7 +110,6 @@ export class MonthlyStatsComponent {
       this.updateNavigationState();
     }
     if (changes['records']) {
-      console.log('Records geändert:', this.records);// falls records sich ändern (kann später wichtig werden)
       this.updateWeeklyData();
       this.calculateCumulativeDifference();
       this.updateNavigationState();

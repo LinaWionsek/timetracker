@@ -81,7 +81,7 @@ export class TimeRecordFormComponent {
             this.setRecordDateAndCreator(); // initialisiert: Tag etc.
           }
         }
-        console.log('user tracked', this.user);
+        // console.log('user tracked', this.user);
       },
       (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
     );
@@ -119,7 +119,7 @@ export class TimeRecordFormComponent {
       this.dataStoreService.updateData(this.record);
     } else {
       // Neu anlegen
-      console.log(this.record)
+
       this.dataStoreService.safeData(this.record)
         .then(() => {
           console.log('Erfolgreich neu angelegt');
@@ -154,7 +154,7 @@ export class TimeRecordFormComponent {
     if(this.user){
       this.record.createdByName = this.user?.lastName + ', ' + this.user?.firstName;
       this.record.createdById = this.user.id;
-      console.log('createdById', this.record.createdById);
+      // console.log('createdById', this.record.createdById);
     }
    
   }

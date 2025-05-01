@@ -12,6 +12,7 @@ import {
   sendSignInLinkToEmail,
   EmailAuthProvider,
 
+
 } from '@angular/fire/auth';
 import {
   Firestore,
@@ -35,6 +36,7 @@ import { userData } from '../types/types';
 })
 export class AuthenticationService {
   private userStatus = new BehaviorSubject<User | null>(null);
+  private authChecked = new BehaviorSubject<boolean>(false);
   unsubUser: () => void = () => { };
   //Wenn sich der Authentifizierungsstatus ändert (Anmeldung/Abmeldung)
   //Wird der aktuelle Benutzer (oder Gast-Benutzer) an alle Komponenten gesendet, die userStatus abonniert haben
@@ -42,17 +44,26 @@ export class AuthenticationService {
   constructor(public auth: Auth, private firestore: Firestore) {
     onAuthStateChanged(this.auth, async (firebaseUser) => {
       if (firebaseUser) {
+        // Echtzeit-Listener für Benutzerdokument starten
+        this.setupUserDocListener(firebaseUser.uid); 
         const user = await this.getFullUser();
-        console.log('User:', user);
-        this.userStatus.next(user || this.getGuestUser());
+
+        this.userStatus.next(user); // Benutzer setzen
+        this.authChecked.next(true); // Authentifizierung abgeschlossen
         //Die next()-Methode sendet einen neuen Wert an alle Observer, die dieses Subject abonniert haben
 
-        // Echtzeit-Listener für Benutzerdokument starten
-        this.setupUserDocListener(firebaseUser.uid);
+
       } else {
-        this.userStatus.next(this.getGuestUser());
+        this.userStatus.next(null);
+        this.authChecked.next(true);
+        console.warn('no active user, redirect to login');
       }
+
     });
+  }
+
+  getAuthChecked() {
+    return this.authChecked.asObservable();
   }
 
   setupUserDocListener(userId: string) {
@@ -66,7 +77,7 @@ export class AuthenticationService {
           ...userData
         });
 
-        console.log('Benutzerdaten aktualisiert:', user);
+        // console.log('Benutzerdaten aktualisiert:', user);
         this.userStatus.next(user);
       }
     }, (error) => {
@@ -180,20 +191,11 @@ export class AuthenticationService {
       return new User(userData);
     } catch (error) {
       console.error('Fehler beim Abrufen des Benutzerprofils:', error);
-      return this.getGuestUser();
+      return null;
     }
   }
 
-  private getGuestUser(): User {
-    return new User({
-      id: 'guest',
-      firstName: 'Guest',
-      lastName: 'User',
-      email: '',
-      role: 'guest',
-      weeklyWorkingHours: 40,
-    });
-  }
+
 
   // async setOnlineStatus(isOnline: boolean): Promise<void> {
   //   const currentUser: FirebaseUser | null = this.auth.currentUser;
