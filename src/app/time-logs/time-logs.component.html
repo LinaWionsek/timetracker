@@ -12,11 +12,16 @@
             </mat-form-field>
         }
  
+        @if(dataReady() && selectedUser) {
+            <app-monthly-stats [user]="selectedUser" [records]="allTimerecords">
+            </app-monthly-stats>
+    
+            <app-daily-logs [user]="selectedUser"  [records]="allTimerecords"></app-daily-logs>
+        } @else {
+            <p class="loading-screen">Lade...</p>
+        }
 
-        <app-monthly-stats *ngIf="selectedUser  && allTimerecords.length > 0" [user]="selectedUser" [records]="allTimerecords">
-        </app-monthly-stats>
-
-        <app-daily-logs *ngIf="selectedUser && allTimerecords.length > 0" [user]="selectedUser"  [records]="allTimerecords"></app-daily-logs>
+       
 
 
     </div>

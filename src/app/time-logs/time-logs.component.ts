@@ -6,7 +6,7 @@ import { Timerecords } from '../models/timerecords.class';
 import { DailyLogsComponent } from '../daily-logs/daily-logs.component';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, ViewChild, inject, signal } from '@angular/core';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import {
@@ -64,7 +64,7 @@ export class TimeLogsComponent {
   }
   // Anzahl der Arbeitstage pro Woche (Mo-Fr)
   workdaysPerWeek: number = 5;
-
+  dataReady = signal(false);
   // Tägliche Sollarbeitszeit in Minuten (berechnet aus vertraglicher Wochenarbeitszeit)
   get dailyTargetMinutes(): number {
     return this.contractWeeklyMinutes / this.workdaysPerWeek;
@@ -77,8 +77,11 @@ export class TimeLogsComponent {
   selectedUserId: string = '';
   selectedUser: User | null = null;
 
+  readyTimeout: any = null;
+
   constructor(private authService: AuthenticationService) { }
   ngOnInit() {
+    
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
       this.allTimerecords = changes.map(record =>
@@ -88,7 +91,7 @@ export class TimeLogsComponent {
           createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
         })
       );
-     
+      console.log('Nach fromJSON:', this.allTimerecords);
       // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
       if (!this.hasEntriesInMonth(this.currentMonth)) {
         const currentMonth = new Date();
@@ -112,22 +115,22 @@ export class TimeLogsComponent {
       this.updateWeeklyData();
       this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
       this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
+      this.checkDataReady();
     });
 
     this.authSubscription = this.authService.getUserStatus().subscribe(
       (user) => {
         this.user = user;
         if (this.user) {
-          this.selectedUserId = this.user.id;
-          this.selectedUser = this.user;
-          // if (this.isAdmin()) {
-          //   this.selectedUserId = '';
+          if (this.isAdmin()) {
+            this.selectedUserId = '';
 
 
-          // } else {
-          //   this.selectedUserId = this.user.id;
-          //   this.selectedUser = this.user;
-          // }
+          } else {
+            this.selectedUserId = this.user.id;
+            this.selectedUser = this.user;
+            this.checkDataReady();
+          }
           this.contractWeeklyHours = this.user.weeklyWorkingHours
           // Wichtig: Berechnungen aktualisieren
           this.updateWeeklyData();
@@ -142,11 +145,10 @@ export class TimeLogsComponent {
             }
           });
         }
-        // console.log('user tracked', this.user);
+        console.log('user tracked', this.user);
       },
       (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
     );
-
     // this.userService.user$.subscribe((user) => {
     //   if (user) {
     //     this.user = user;
@@ -154,12 +156,30 @@ export class TimeLogsComponent {
     // });
 
   }
+
+  checkDataReady() {
+    // if (this.selectedUser && this.allTimerecords.length > 0) {
+    //   this.dataReady.set(true);
+    // }
+    const ready = this.selectedUser && this.allTimerecords.length > 0;
+
+    if (ready) {
+      // ⏳ warte künstlich 300ms, bevor wir "ready" sagen
+      if (!this.readyTimeout) {
+        this.readyTimeout = setTimeout(() => {
+          this.dataReady.set(true);
+        }, 200);
+      }
+    }
+  }
+
   isAdmin(): boolean {
     return this.user?.role === 'admin';
   }
 
   onUserSelected() {
     this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
+    this.checkDataReady();
   }
 
 
