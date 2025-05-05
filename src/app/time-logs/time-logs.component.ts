@@ -6,7 +6,7 @@ import { Timerecords } from '../models/timerecords.class';
 import { DailyLogsComponent } from '../daily-logs/daily-logs.component';
 import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, ViewChild, inject, signal } from '@angular/core';
+import { Component, ViewChild, computed, inject, signal } from '@angular/core';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import {
@@ -45,7 +45,7 @@ interface WeeklyData {
 export class TimeLogsComponent {
   private _liveAnnouncer = inject(LiveAnnouncer);
   dataStoreService = inject(DataStoreServiceService);
-  allTimerecords: Timerecords[] = [];
+
   // displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
   weeklyDisplayedColumns: string[] = ['weekRange', 'actualHours', 'targetHours', 'difference'];
   weeklyDataSource = new MatTableDataSource<WeeklyData>([]);
@@ -64,7 +64,7 @@ export class TimeLogsComponent {
   }
   // Anzahl der Arbeitstage pro Woche (Mo-Fr)
   workdaysPerWeek: number = 5;
-  dataReady = signal(false);
+
   // Tägliche Sollarbeitszeit in Minuten (berechnet aus vertraglicher Wochenarbeitszeit)
   get dailyTargetMinutes(): number {
     return this.contractWeeklyMinutes / this.workdaysPerWeek;
@@ -75,22 +75,32 @@ export class TimeLogsComponent {
   authSubscription: Subscription | null = null;
 
   selectedUserId: string = '';
-  selectedUser: User | null = null;
+
+  // allTimerecords: Timerecords[] = [];
+  // selectedUser: User | null = null;
+  allTimerecords = signal<Timerecords[]>([]);
+  selectedUser = signal<User | null>(null);
+
+  dataReady = computed(() => {
+    return this.selectedUser() !== null && this.allTimerecords().length > 0;
+  });
 
   readyTimeout: any = null;
 
   constructor(private authService: AuthenticationService) { }
   ngOnInit() {
-    
+
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
-      this.allTimerecords = changes.map(record =>
+      const parsedRecords = changes.map(record =>
         Timerecords.fromJSON({
           ...record,
           date: typeof record.date === 'number' ? record.date : Number(record.date),
           createdAt: typeof record.createdAt === 'number' ? record.createdAt : Number(record.createdAt)
         })
       );
+      this.allTimerecords.set(parsedRecords);
+
       console.log('Nach fromJSON:', this.allTimerecords);
       // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
       if (!this.hasEntriesInMonth(this.currentMonth)) {
@@ -115,7 +125,7 @@ export class TimeLogsComponent {
       this.updateWeeklyData();
       this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
       this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
-      this.checkDataReady();
+    
     });
 
     this.authSubscription = this.authService.getUserStatus().subscribe(
@@ -123,13 +133,13 @@ export class TimeLogsComponent {
         this.user = user;
         if (this.user) {
           if (this.isAdmin()) {
-            this.selectedUserId = '';
-
+            this.selectedUserId = this.user.id;
+            this.selectedUser.set(this.user);
 
           } else {
             this.selectedUserId = this.user.id;
-            this.selectedUser = this.user;
-            this.checkDataReady();
+            this.selectedUser.set(this.user);
+           
           }
           this.contractWeeklyHours = this.user.weeklyWorkingHours
           // Wichtig: Berechnungen aktualisieren
@@ -141,7 +151,7 @@ export class TimeLogsComponent {
           this.dataStoreService.getAllUsers().subscribe(users => {
             this.allUsers = users;
             if (this.isAdmin() && this.selectedUserId) {
-              this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
+             this.onUserSelected()
             }
           });
         }
@@ -157,29 +167,16 @@ export class TimeLogsComponent {
 
   }
 
-  checkDataReady() {
-    // if (this.selectedUser && this.allTimerecords.length > 0) {
-    //   this.dataReady.set(true);
-    // }
-    const ready = this.selectedUser && this.allTimerecords.length > 0;
-
-    if (ready) {
-      // ⏳ warte künstlich 300ms, bevor wir "ready" sagen
-      if (!this.readyTimeout) {
-        this.readyTimeout = setTimeout(() => {
-          this.dataReady.set(true);
-        }, 200);
-      }
-    }
-  }
 
   isAdmin(): boolean {
     return this.user?.role === 'admin';
   }
 
   onUserSelected() {
-    this.selectedUser = this.allUsers.find(u => u.id === this.selectedUserId) || null;
-    this.checkDataReady();
+    this.selectedUser.set(
+      this.allUsers.find(u => u.id === this.selectedUserId) || null
+    );
+
   }
 
 
@@ -208,7 +205,7 @@ export class TimeLogsComponent {
   }
 
   updateWeeklyData() {
-    const monthlyWeeklyData = this.getMonthlyWeeklyData(this.currentMonth, this.allTimerecords);
+    const monthlyWeeklyData = this.getMonthlyWeeklyData(this.currentMonth, this.allTimerecords());
     this.weeklyDataSource.data = monthlyWeeklyData;
   }
 
@@ -344,7 +341,7 @@ export class TimeLogsComponent {
     const totalTargetMinutes = allWorkdays.length * this.dailyTargetMinutes;
     // Summe aller tatsächlich gearbeiteten Minuten
     let totalWorkedMinutes = 0;
-    this.allTimerecords.forEach(record => {
+    this.allTimerecords().forEach(record => {
       let minutes = record.totalMinutes;
       if (!minutes && record.timeWorked) {
         const [hours, mins] = record.timeWorked.split(':').map(Number);
@@ -360,7 +357,7 @@ export class TimeLogsComponent {
     if (this.allTimerecords.length === 0) return [];
 
     // Frühestes und spätestes Datum finden
-    const dates = this.allTimerecords.map(r => new Date(r.date));
+    const dates = this.allTimerecords().map(r => new Date(r.date));
     const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const endDate = new Date(Math.max(...dates.map(d => d.getTime())));
     // Auf den ersten Tag des Monats setzen für Start
@@ -391,7 +388,7 @@ export class TimeLogsComponent {
     const firstDayOfMonth = startOfMonth(month);
     const lastDayOfMonth = endOfMonth(month);
 
-    return this.allTimerecords.some(record => {
+    return this.allTimerecords().some(record => {
       const recordDate = new Date(record.date);
       return recordDate >= firstDayOfMonth && recordDate <= lastDayOfMonth &&
         (record.totalMinutes > 0 || (record.timeWorked && record.timeWorked !== '0:00'));

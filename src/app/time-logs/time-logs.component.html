@@ -12,14 +12,15 @@
             </mat-form-field>
         }
  
-        @if(dataReady() && selectedUser) {
-            <app-monthly-stats [user]="selectedUser" [records]="allTimerecords">
+        @if(dataReady() && selectedUser()) {
+            <app-monthly-stats [user]="selectedUser()!" [records]="allTimerecords()">
             </app-monthly-stats>
     
-            <app-daily-logs [user]="selectedUser"  [records]="allTimerecords"></app-daily-logs>
-        } @else {
+            <app-daily-logs [user]="selectedUser()!"  [records]="allTimerecords()"></app-daily-logs>
+        } 
+        <!-- @else {
             <p class="loading-screen">Lade...</p>
-        }
+        } -->
 
        
 
