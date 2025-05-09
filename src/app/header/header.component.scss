@@ -2,18 +2,67 @@
 @import "./../../styles";
 
 
+
 mat-toolbar {
-    height: 80px;
-}
+    padding: 8px 16px;
+    .toolbar-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
 
-.menu-container {
-    @include display-flex($jc: space-between);
-    @include size($width: 100%);
-    padding: 0 32px;
-}
+    .title {
+        font-size: 20px;
+        //   font-weight: bold;
+        margin-right: 16px;
+    }
 
-.menu {
-    @include display-flex($gap: 32px);
-    @include size($width: 100%);
-    padding: 16px 0;
+    .menu {
+        display: flex;
+        gap: 8px;
+        flex-grow: 1;
+        justify-content: center;
+    }
+
+    .logout-icon {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        margin-top: 8px;
+        margin-left: 8px;
+        &:hover {
+            cursor: pointer;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.04)
+        }
+    }
+
+    @media (max-width: 600px) {
+
+        height: 156px !important;
+
+
+        .toolbar-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .toolbar-container>.top-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .menu {
+            flex-direction: column;
+            width: 100%;
+            gap: 4px;
+
+            button {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+    }
 }

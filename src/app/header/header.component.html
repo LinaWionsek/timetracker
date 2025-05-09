@@ -1,13 +1,16 @@
 <mat-toolbar color="primary">
-  <div class="menu-container">
-    <span>Time Tracker</span>
+  <div class="toolbar-container">
+    <span class="title">Time Tracker</span>
+
     <div class="menu">
-      <button mat-raised-button routerLink="/time-tracking"><mat-icon>access_time</mat-icon>Zeiterfassung</button>
-      <button mat-raised-button  routerLink="/time-overview"><mat-icon>trending_up</mat-icon>Zeitübersicht</button>
+      <button mat-button routerLink="/time-tracking">
+        <mat-icon>access_time</mat-icon> Zeiterfassung
+      </button>
+      <button mat-button routerLink="/time-overview">
+        <mat-icon>trending_up</mat-icon> Zeitübersicht
+      </button>
     </div>
-    <button (click)="signOut()">Logout</button>
-    
+
+    <img src="../../assets/img/logout.png" (click)="signOut()" alt="Logout" class="logout-icon">
   </div>
-  
-  </mat-toolbar>
-  
+</mat-toolbar>
