@@ -6,6 +6,8 @@ import { startOfWeek, format, endOfWeek } from 'date-fns';
 import { MatIconModule } from '@angular/material/icon';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 import { MatDialog } from '@angular/material/dialog';
+import { User } from '../models/user.class';
+import { AuthenticationService } from '../services/authentication.service';
 
 
 @Component({
@@ -21,31 +23,53 @@ export class LastRecordsComponent {
   timerecord!: Timerecords;
   allTimerecords: Timerecords[] = [];
   //allTimerecords braucht kein $, weil es sich dabei um die konkreten Daten (ein normales Array) handelt und nicht um ein Observable.
+  user: User | null = null;
 
+  constructor(private authService: AuthenticationService) { }
 
   ngOnInit() {
+    this.authService.getUserStatus().subscribe(
+      (user) => {
+        this.user = user;
+        if (this.user) {
+          this.loadTimerecords();
+        }
+        console.log('user tracked', this.user);
+      },
+      (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
+    );
+
+  }
+  loadTimerecords() {
     this.dataStoreService.getTimerecords();
     this.dataStoreService.timerecords$.subscribe((changes) => {
       this.processTimerecords(changes);
     });
   }
-
   processTimerecords(changes: Timerecords[]) {
-    // Prüfen, ob überhaupt Daten kommen
-    if (!changes || changes.length === 0) {
-      console.log('Keine Daten erhalten');
+    if (!this.user) {
+      console.warn('Kein Benutzer verfügbar');
       return;
+    } else {
+      // Prüfen, ob überhaupt Daten kommen
+      if (!changes || changes.length === 0) {
+        console.log('Keine Daten erhalten');
+        return;
+      }
+      try {
+        const user = this.user;
+        const recordsForUser = changes.filter(record => record.createdById === user.id);
+        this.allTimerecords = recordsForUser.map(record => this.mapTimerecord(record));
+        this.sortTimeRecords();
+        this.allTimerecords = this.allTimerecords.slice(0, 5);
+      } catch (error) {
+        console.error('Fehler bei der Verarbeitung:', error);
+      }
     }
-    try {
-      this.allTimerecords = changes.map(record => this.mapTimerecord(record));
-      this.sortTimeRecords();
-      this.allTimerecords = this.allTimerecords.slice(0, 5);
-    } catch (error) {
-      console.error('Fehler bei der Verarbeitung:', error);
-    }
+
   }
 
-  mapTimerecord(record: Timerecords){
+  mapTimerecord(record: Timerecords) {
     const timerecord = Timerecords.fromJSON({
       ...record,
       date: typeof record.date === 'number' ? record.date : Number(record.date),
