@@ -10,13 +10,13 @@ import { DataStoreServiceService } from '../services/data-store-service.service'
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { User } from '../models/user.class';
-
-
+import {MatPaginatorModule} from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-daily-logs',
   standalone: true,
-  imports: [MatIconModule, MatTableModule, MatSortModule, CommonModule],
+  imports: [MatIconModule, MatTableModule, MatSortModule, CommonModule, MatPaginatorModule],
   templateUrl: './daily-logs.component.html',
   styleUrl: './daily-logs.component.scss'
 })
@@ -30,6 +30,7 @@ export class DailyLogsComponent {
   dialog = inject(MatDialog);
   displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
   @ViewChild('detailSort') detailSort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Input() user!: User;
   @Input() records: Timerecords[] = [];
   
@@ -50,6 +51,9 @@ export class DailyLogsComponent {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.detailSort;
+    // Assign the MatPaginator to the dataSource so that pagination works correctly.
+    // Without this, the table will display all entries at once instead of paginating them.
+    this.dataSource.paginator = this.paginator;
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case 'date': return item.date;
