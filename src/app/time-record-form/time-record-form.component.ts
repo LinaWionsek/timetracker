@@ -18,6 +18,7 @@ import { DataStoreServiceService } from '../services/data-store-service.service'
 import { Subscription } from 'rxjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { User } from '../models/user.class';
+import { ToastComponent } from '../toast/toast.component';
 
 @Component({
   selector: 'app-time-record-form',
@@ -32,7 +33,8 @@ import { User } from '../models/user.class';
     MatIconModule,
     MatSelectModule,
     MatMenuModule,
-  ],
+    ToastComponent
+],
   templateUrl: './time-record-form.component.html',
   styleUrl: './time-record-form.component.scss'
 })
