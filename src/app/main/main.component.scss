@@ -6,7 +6,7 @@
 .content {
   @include display-flex($ai: flex-start, $gap: 32px);
   padding: 48px;
-  height: calc(100vh - 160px)
+  height: calc(100vh - 144px)
 }
 
 

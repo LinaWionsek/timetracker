@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { User } from '../models/user.class';
 import { ToastComponent } from '../toast/toast.component';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-time-record-form',
@@ -60,6 +61,7 @@ export class TimeRecordFormComponent {
   user: User | null = null;
 
 
+  constructor(private toastService: ToastService){}
   closeDialog() {
     // Bei Klick nur das Output-Event emitten
     this.close.emit();
@@ -129,7 +131,8 @@ export class TimeRecordFormComponent {
         .catch(err => console.error('Fehler', err));
     }
 
-    this.showToast();
+
+    this.toastService.showToast('Zeiten erfolgreich gespeichert!');
     this.calculationFinished = false;
     setTimeout(() => {
       this.closeDialog();
@@ -137,12 +140,7 @@ export class TimeRecordFormComponent {
 
   }
 
-  showToast() {
-    this.isVisible = true;
-    setTimeout(() => {
-      this.isVisible = false;
-    }, this.duration || 2000);
-  }
+
 
 
   // ----------------------------

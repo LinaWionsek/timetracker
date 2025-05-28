@@ -159,26 +159,10 @@
 .submit-container {
   @include display-flex($gap: 32px);
   position: absolute;
-  bottom: 32px;
+  bottom: 32px; // do not change important for edit dialog
 }
 
-.toast {
-  @include position(fixed, 85%, 50%, $zi: 4);
-  @include font-style($font-size-24, $font-weight-500, white);
-  transform: translate(5000%, -50%);
-  padding: 36px;
-  border-radius: 4px;
-  background: $primary-color-blue;
-  box-shadow: $primary-box-shadow;
-  max-width: 80%;
-  transition: 225ms ease-in-out;
-  text-align: center;
-}
 
-.toast.is-visible {
-  transform: translate(-50%, -50%);
-  opacity: 1;
-}
 
 @media (max-width: 768px) {
   .content {

@@ -3,9 +3,9 @@
 
 .toast {
   @include position(fixed, 85%, 50%, $zi: 4);
-  @include font-style($font-size-24, $font-weight-500, white);
+  @include font-style($font-size-20, $font-weight-500, white);
   transform: translate(5000%, -50%);
-  padding: 36px;
+  padding: 32px;
   border-radius: 4px;
   background: $primary-color-blue;
   box-shadow: $primary-box-shadow;
