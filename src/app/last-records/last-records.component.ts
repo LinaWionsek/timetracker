@@ -34,7 +34,6 @@ export class LastRecordsComponent {
         if (this.user) {
           this.loadTimerecords();
         }
-        console.log('user tracked', this.user);
       },
       (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
     );

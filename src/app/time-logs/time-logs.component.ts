@@ -101,7 +101,6 @@ export class TimeLogsComponent {
       );
       this.allTimerecords.set(parsedRecords);
 
-      console.log('Nach fromJSON:', this.allTimerecords);
       // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
       if (!this.hasEntriesInMonth(this.currentMonth)) {
         const currentMonth = new Date();
@@ -155,16 +154,10 @@ export class TimeLogsComponent {
             }
           });
         }
-        console.log('user tracked', this.user);
+        // console.log('user tracked', this.user);
       },
       (error) => console.error('Fehler beim Überwachen des Auth-Status:', error)
     );
-    // this.userService.user$.subscribe((user) => {
-    //   if (user) {
-    //     this.user = user;
-    //   }
-    // });
-
   }
 
 

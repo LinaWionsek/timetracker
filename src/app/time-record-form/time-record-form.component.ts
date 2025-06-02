@@ -154,7 +154,6 @@ export class TimeRecordFormComponent {
     if(this.user){
       this.record.createdByName = this.user?.lastName + ', ' + this.user?.firstName;
       this.record.createdById = this.user.id;
-      // console.log('createdById', this.record.createdById);
     }
    
   }

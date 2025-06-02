@@ -14,10 +14,12 @@ import { User } from '../models/user.class';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import { ToastComponent } from "../toast/toast.component";
+import { ToastService } from '../services/toast.service';
 @Component({
   selector: 'app-log-in',
   standalone: true,
-  imports: [ 
+  imports: [
     CommonModule,
     FormsModule,
     // AuthHeaderComponent,
@@ -27,7 +29,9 @@ import {MatButtonModule} from '@angular/material/button';
     RouterModule,
     MatInputModule,
     MatIconModule,
-    MatButtonModule],
+    MatButtonModule,
+    ToastComponent
+],
   templateUrl: './log-in.component.html',
   styleUrl: './log-in.component.scss'
 })
@@ -43,7 +47,7 @@ export class LogInComponent {
     private router: Router,
     private authService: AuthenticationService,
     // public passwordVisibilityService: PasswordVisibilityService,
-    // private toastService: ToastService,
+    private toastService: ToastService,
     private auth: Auth
     // private afAuth: AngularFireAuth
   ) {}
@@ -78,14 +82,13 @@ export class LogInComponent {
     this.authService
       .signIn(this.email, this.password)
       .then(() => {
-        // this.toastService.showToast('Login erfolgreich!');
+        this.toastService.showToast('Login erfolgreich!');
         console.log('Login erfolgreich!');
         this.email = '';
         this.password = '';
-
+        
         setTimeout(() => {
           this.navigateToMainPage();
-          // this.authService.setOnlineStatus(true);
         }, 1000);
       })
       .catch((error) => {
