@@ -12,11 +12,13 @@ import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { User } from '../models/user.class';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { MatPaginator } from '@angular/material/paginator';
+import { ToastComponent } from "../toast/toast.component";
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-daily-logs',
   standalone: true,
-  imports: [MatIconModule, MatTableModule, MatSortModule, CommonModule, MatPaginatorModule],
+  imports: [MatIconModule, MatTableModule, MatSortModule, CommonModule, MatPaginatorModule, ToastComponent],
   templateUrl: './daily-logs.component.html',
   styleUrl: './daily-logs.component.scss'
 })
@@ -26,6 +28,7 @@ export class DailyLogsComponent {
   allTimerecords: Timerecords[] = [];
   private _liveAnnouncer = inject(LiveAnnouncer);
   dataStoreService = inject(DataStoreServiceService);
+  toastService = inject(ToastService);
   dataSource = new MatTableDataSource(this.allTimerecords);
   dialog = inject(MatDialog);
   displayedColumns: string[] = ['date', 'day', 'time', 'duration', 'break', 'by', 'at', 'edit'];
@@ -88,6 +91,7 @@ export class DailyLogsComponent {
     dialog.afterClosed().subscribe(result => {
       if (result === true) {
         this.dataStoreService.deleteTimerecord(timerecord);
+        this.toastService.showToast('Eintrag erfolgreich gelöscht!');
       }
     });
   }

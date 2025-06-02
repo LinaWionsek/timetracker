@@ -54,14 +54,14 @@ export class TimeRecordFormComponent {
   // Toast
   isVisible: boolean = false;
   duration: number = 2000;
-
+  toastService = inject(ToastService);
   dataStoreService = inject(DataStoreServiceService);
   authService = inject(AuthenticationService);
   authSubscription: Subscription | null = null;
   user: User | null = null;
 
 
-  constructor(private toastService: ToastService){}
+
   closeDialog() {
     // Bei Klick nur das Output-Event emitten
     this.close.emit();
