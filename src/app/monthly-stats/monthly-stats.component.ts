@@ -74,34 +74,34 @@ export class MonthlyStatsComponent {
 
   // constructor(private authService: AuthenticationService) { }
   ngOnInit() {
-      // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
-      if (!this.hasEntriesInMonth(this.currentMonth)) {
-        const currentMonth = new Date();
-        if (this.hasEntriesInMonth(currentMonth)) {
-          this.currentMonth = currentMonth;
+    // Setze den aktuellen Monat auf den aktuellen Monat oder den nächsten mit Einträgen
+    if (!this.hasEntriesInMonth(this.currentMonth)) {
+      const currentMonth = new Date();
+      if (this.hasEntriesInMonth(currentMonth)) {
+        this.currentMonth = currentMonth;
+      } else {
+        // Suche nach dem nächsten Monat mit Einträgen
+        const nextMonth = this.findNextMonthWithEntries(currentMonth);
+        if (nextMonth) {
+          this.currentMonth = nextMonth;
         } else {
-          // Suche nach dem nächsten Monat mit Einträgen
-          const nextMonth = this.findNextMonthWithEntries(currentMonth);
-          if (nextMonth) {
-            this.currentMonth = nextMonth;
-          } else {
-            // Suche nach dem vorherigen Monat mit Einträgen
-            const prevMonth = this.findPreviousMonthWithEntries(currentMonth);
-            if (prevMonth) {
-              this.currentMonth = prevMonth;
-            }
+          // Suche nach dem vorherigen Monat mit Einträgen
+          const prevMonth = this.findPreviousMonthWithEntries(currentMonth);
+          if (prevMonth) {
+            this.currentMonth = prevMonth;
           }
         }
       }
-      this.contractWeeklyHours = this.user.weeklyWorkingHours;
-      this.updateWeeklyData();
-      this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
-      this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
     }
+    this.contractWeeklyHours = this.user.weeklyWorkingHours;
+    this.updateWeeklyData();
+    this.calculateCumulativeDifference(); // Berechnet den Gesamtsaldo
+    this.updateNavigationState(); // Aktualisiert den Zustand der Navigationsbuttons
+  }
 
-    
-      
-    ngOnChanges(changes: SimpleChanges) {
+
+
+  ngOnChanges(changes: SimpleChanges) {
     if (changes['user']) {
       // WENN User sich ändert: Tabelle neu aufbauen
       this.contractWeeklyHours = this.user.weeklyWorkingHours;
@@ -116,8 +116,10 @@ export class MonthlyStatsComponent {
     }
   }
 
-  
 
+  getUserRecords(): Timerecords[] {
+    return this.records.filter(record => record.createdById === this.user.id);
+  }
 
   isAdmin(): boolean {
     return this.user?.role === 'admin';
@@ -147,7 +149,8 @@ export class MonthlyStatsComponent {
   }
 
   updateWeeklyData() {
-    const recordsForUser = this.records.filter(record => record.createdById === this.user.id);
+    // const recordsForUser = this.records.filter(record => record.createdById === this.user.id);
+    const recordsForUser = this.getUserRecords();
     const monthlyWeeklyData = this.getMonthlyWeeklyData(this.currentMonth, recordsForUser);
     this.weeklyDataSource.data = monthlyWeeklyData;
   }
@@ -280,11 +283,16 @@ export class MonthlyStatsComponent {
 
   // Berechnet den Gesamtsaldo über alle Zeiteinträge hinweg
   calculateCumulativeDifference() {
-    const allWorkdays = this.getAllWorkdaysSinceStart();
+
+
+    const userRecords = this.getUserRecords();
+    const allWorkdays = this.getAllWorkdaysSinceStart(userRecords);
     const totalTargetMinutes = allWorkdays.length * this.dailyTargetMinutes;
+
+
     // Summe aller tatsächlich gearbeiteten Minuten
     let totalWorkedMinutes = 0;
-    this.records.forEach(record => {
+    userRecords.forEach(record => {
       let minutes = record.totalMinutes;
       if (!minutes && record.timeWorked) {
         const [hours, mins] = record.timeWorked.split(':').map(Number);
@@ -293,28 +301,28 @@ export class MonthlyStatsComponent {
       totalWorkedMinutes += (minutes || 0);
     });
     this.cumulativeDifferenceMinutes = totalWorkedMinutes - totalTargetMinutes;
+    
   }
 
   // Ermittelt alle Arbeitstage seit Beginn der Zeiterfassung
-  getAllWorkdaysSinceStart(): Date[] {
-    if (this.records.length === 0) return [];
+  getAllWorkdaysSinceStart(records: Timerecords[]): Date[] {
 
-    // Frühestes und spätestes Datum finden
-    const dates = this.records.map(r => new Date(r.date));
-    const startDate = new Date(Math.min(...dates.map(d => d.getTime())));
-    const endDate = new Date(Math.max(...dates.map(d => d.getTime())));
-    // Auf den ersten Tag des Monats setzen für Start
-    const firstDay = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-    const lastDay = endDate;
-    // Alle Arbeitstage im Zeitraum ermitteln
+    if (records.length === 0) return [];
+
+    const dates = records.map(r => new Date(r.date));
+    const startDate = startOfMonth(new Date(Math.min(...dates.map(d => d.getTime()))));
+    const endDate = endOfMonth(new Date(Math.max(...dates.map(d => d.getTime()))));
+
     const allWorkdays: Date[] = [];
-    let currentDay = firstDay;
-    while (currentDay <= lastDay) {
+    let currentDay = new Date(startDate);
+
+    while (currentDay <= endDate) {
       if (this.isWorkday(currentDay)) {
         allWorkdays.push(new Date(currentDay));
       }
       currentDay = addDays(currentDay, 1);
     }
+
     return allWorkdays;
   }
 
@@ -331,11 +339,13 @@ export class MonthlyStatsComponent {
     const firstDayOfMonth = startOfMonth(month);
     const lastDayOfMonth = endOfMonth(month);
 
-    return this.records.some(record => {
-      const recordDate = new Date(record.date);
-      return recordDate >= firstDayOfMonth && recordDate <= lastDayOfMonth &&
-        (record.totalMinutes > 0 || (record.timeWorked && record.timeWorked !== '0:00'));
-    });
+    return this.records
+      .filter(record => record.createdById === this.user.id)
+      .some(record => {
+        const recordDate = new Date(record.date);
+        return recordDate >= firstDayOfMonth && recordDate <= lastDayOfMonth &&
+          (record.totalMinutes > 0 || (record.timeWorked && record.timeWorked !== '0:00'));
+      });
   }
 
   // Findet den nächsten Monat mit Einträgen

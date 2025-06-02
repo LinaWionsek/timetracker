@@ -2,7 +2,7 @@
   <div class="overview-header">
     <div>
         <div class="cumulative-balance-container">
-            <h2>Gesamtsaldo</h2>
+            <h2>Gesamtsaldo (bis einschließlich {{ currentMonth | date:'MMMM yyyy' }})</h2>
             <div class="balance"
                 [ngClass]="{'positive': cumulativeDifferenceMinutes >= 0, 'negative': cumulativeDifferenceMinutes < 0}">
                 {{ getCumulativeDifferenceString() }}
