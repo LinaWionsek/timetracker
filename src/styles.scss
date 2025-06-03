@@ -89,9 +89,9 @@ $mobile: 480px;
 
 .mat-mdc-header-row {
     // background-color: #EAF0F7; //org
-    background-color: #e3f2fd;
-    font-weight: 500;
-    color: #404B59;
+    background-color: #e3f2fd !important;
+    font-weight: 500 !important;
+    color: #404B59 !important;
 }
 
 .mat-mdc-cell,
