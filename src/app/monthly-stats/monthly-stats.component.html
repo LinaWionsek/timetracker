@@ -1,5 +1,10 @@
-  <!-- Monatsnavigation -->
-  <div class="overview-header">
+<!-- Monatsnavigation -->
+<div class="overview-header">
+    <div class="user-info">
+        <h2>{{user.firstName}} {{user.lastName}}</h2>
+        <span> Rolle: {{user.role}} </span>
+        <span> Wochenstunden: {{user.weeklyWorkingHours}} </span>
+    </div>
     <div>
         <div class="cumulative-balance-container">
             <h2>Gesamtsaldo (bis einschließlich {{ currentMonth | date:'MMMM yyyy' }})</h2>
@@ -8,25 +13,19 @@
                 {{ getCumulativeDifferenceString() }}
             </div>
         </div>
-
-        <div class="month-navigation">
-            <button mat-icon-button (click)="previousMonth()" [disabled]="!hasPreviousMonth">
-                <mat-icon>arrow_back</mat-icon>
-            </button>
-            <span class="month-heading">{{ currentMonth | date:'MMMM yyyy' }}</span>
-            <button mat-icon-button (click)="nextMonth()" [disabled]="!hasNextMonth">
-                <mat-icon>arrow_forward</mat-icon>
-            </button>
-        </div>
-    </div>
-    <div>
-        <h2>{{user.firstName}} {{user.lastName}}</h2>
-        role: {{user.role}}
-        hours: {{user.weeklyWorkingHours}}
     </div>
 </div>
 
 <div class="weekly-container mb-8">
+    <div class="month-navigation">
+        <button mat-icon-button (click)="previousMonth()" [disabled]="!hasPreviousMonth">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <span class="month-heading">{{ currentMonth | date:'MMMM yyyy' }}</span>
+        <button mat-icon-button (click)="nextMonth()" [disabled]="!hasNextMonth">
+            <mat-icon>arrow_forward</mat-icon>
+        </button>
+    </div>
     <h2 class="text-xl font-bold mb-4">Monatliche Zeitübersicht (Arbeitstage: {{calculateTotalWorkdays()}})</h2>
     <table mat-table [dataSource]="weeklyDataSource" matSort matSortActive="weekRange" matSortDirection="asc"
         #weeklySort="matSort" class="mat-elevation-z8 w-full">
