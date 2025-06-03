@@ -75,6 +75,7 @@ $mobile: 480px;
 
 .mat-mdc-table {
     border-radius: 12px;
+    border: 1px solid #e5e7eb !important; //new
     overflow: hidden;
     background-color: #ffffff;
     font-family: 'Inter', sans-serif;

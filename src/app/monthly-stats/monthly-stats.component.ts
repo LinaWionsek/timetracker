@@ -6,6 +6,7 @@ import { addDays, eachWeekOfInterval, endOfMonth, endOfWeek, format, getDay, get
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -29,7 +30,7 @@ interface WeeklyData {
 @Component({
   selector: 'app-monthly-stats',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatTableModule, MatSortModule],
+  imports: [CommonModule, MatIconModule, MatTableModule, MatSortModule, MatButtonModule],
   templateUrl: './monthly-stats.component.html',
   styleUrl: './monthly-stats.component.scss'
 })
