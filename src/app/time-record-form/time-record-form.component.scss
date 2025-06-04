@@ -179,7 +179,6 @@
 
   .weekday-container {
     @include display-flex($fd: column, $ai: flex-start, $gap: 16px);
-    @include size($height: 100%);
   }
 
   .day-box {

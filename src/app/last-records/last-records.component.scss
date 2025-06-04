@@ -5,13 +5,13 @@
   @include display-flex($fd: column, $gap: 16px);
   background-color: #ffffff;
   width: 330px;
-  height: 600px;
-  padding: 32px 16px;
+  height: 500px;
+  padding: 16px 16px 0 16px;
   border-radius: 4px;
 }
 
 .move-container {
-
+  @include display-flex($fd: column);
   height: 100%;
   overflow-y: auto;
   scrollbar-color: #3f51b5 white;

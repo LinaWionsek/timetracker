@@ -3,7 +3,7 @@
 
 .content {
   @include display-flex($fd: column, $gap: 16px);
-  padding: 48px;
+  // padding: 48px;
 }
 
 .overview-container {

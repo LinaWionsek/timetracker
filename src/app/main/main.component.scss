@@ -5,7 +5,7 @@
 
 .content {
   @include display-flex($ai: flex-start, $gap: 32px);
-  padding: 48px;
+  // padding: 48px;
   height: calc(100vh - 144px)
 }
 
@@ -14,6 +14,7 @@
 @media (max-width: 768px) {
   .content {
     @include display-flex($fd: column, $jc: flex-start);
+    height: fit-content;
   }
 
 }
@@ -21,6 +22,7 @@
 @media (max-width: 600px) {
   .content {
     @include display-flex($fd: column, $jc: flex-start);
+    gap: 16px;
   }
 
 }
