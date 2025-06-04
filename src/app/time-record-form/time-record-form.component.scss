@@ -40,24 +40,21 @@
   @include display-flex($fd: column, $jc: flex-start, $gap: 24px);
   background-color: #ffffff;
   padding: 32px 16px;
-  height: 600px;
+  height: 650px;
   width: 330px;
   border-radius: 4px;
   position: relative;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.04);
 }
 
 .weekday-container {
   @include display-flex($fd: column, $ai: flex-start, $gap: 16px);
   background-color: #ffffff;
-  // margin-top: 8px;
-  // border: 1px solid rgba(0, 0, 0, 0.12);
-  // border-radius: 4px;
-  // height: 80px;
 }
 
 .day-box {
   @include display-flex($fd: column);
-  // @include size(310px, 100%);
   margin: 0 16px;
 }
 

@@ -5,7 +5,8 @@
   @include display-flex($fd: column, $gap: 16px);
   background-color: #ffffff;
   width: 330px;
-  height: 500px;
+  // height: 500px;
+  height: fit-content;
   padding: 16px 16px 0 16px;
   border-radius: 4px;
 }
