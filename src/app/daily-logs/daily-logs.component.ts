@@ -14,7 +14,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { MatPaginator } from '@angular/material/paginator';
 import { ToastComponent } from "../toast/toast.component";
 import { ToastService } from '../services/toast.service';
-
+import { de } from 'date-fns/locale';
+import { format } from 'date-fns';
 @Component({
   selector: 'app-daily-logs',
   standalone: true,
@@ -26,6 +27,8 @@ import { ToastService } from '../services/toast.service';
 
 export class DailyLogsComponent {
   allTimerecords: Timerecords[] = [];
+  de = de; 
+  format = format; 
   private _liveAnnouncer = inject(LiveAnnouncer);
   dataStoreService = inject(DataStoreServiceService);
   toastService = inject(ToastService);

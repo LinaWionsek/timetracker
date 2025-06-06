@@ -9,7 +9,7 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatIconModule } from '@angular/material/icon';
-
+import { de } from 'date-fns/locale';
 
 interface WeeklyData {
   weekStart: string;
@@ -49,7 +49,8 @@ export class MonthlyStatsComponent {
   allUsers: User[] = [];
   // Kumulativer Stundensaldo (über alle Monate)
   cumulativeDifferenceMinutes: number = 0;
-
+  format = format;
+  de = de;
   // Aktuelles Datum für Monatsnavigation
   currentMonth: Date = new Date();
 
@@ -302,7 +303,7 @@ export class MonthlyStatsComponent {
       totalWorkedMinutes += (minutes || 0);
     });
     this.cumulativeDifferenceMinutes = totalWorkedMinutes - totalTargetMinutes;
-    
+
   }
 
   // Ermittelt alle Arbeitstage seit Beginn der Zeiterfassung

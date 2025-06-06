@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { differenceInMinutes, format } from 'date-fns';
-
+import { de } from 'date-fns/locale';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -35,7 +35,7 @@ import { ToastService } from '../services/toast.service';
     MatSelectModule,
     MatMenuModule,
     ToastComponent
-],
+  ],
   templateUrl: './time-record-form.component.html',
   styleUrl: './time-record-form.component.scss'
 })
@@ -150,12 +150,12 @@ export class TimeRecordFormComponent {
   setRecordDateAndCreator() {
     // Nur Datum & Wochentag updaten, keinen Reset der ganzen record
     this.record.date = this.selectedDate.getTime();
-    this.record.day = format(this.selectedDate, 'EEEE');
-    if(this.user){
+    this.record.day = format(this.selectedDate, 'EEEE', { locale: de });
+    if (this.user) {
       this.record.createdByName = this.user?.lastName + ', ' + this.user?.firstName;
       this.record.createdById = this.user.id;
     }
-   
+
   }
 
   setCalculationToFalse() {
@@ -195,12 +195,12 @@ export class TimeRecordFormComponent {
     const timeWithoutBreak = workingTimeInMinutes;
     const whours = Math.floor(timeWithoutBreak / 60);
     const wminutes = timeWithoutBreak % 60;
-    this.record.timeWithoutBreak = `${whours} hours, ${wminutes} minutes`;
+    this.record.timeWithoutBreak = `${whours} Stunden, ${wminutes} Minuten`;
 
     const actualWorkingTime = workingTimeInMinutes - (this.record.breakMinutes || 0);
     const thours = Math.floor(actualWorkingTime / 60);
     const tminutes = actualWorkingTime % 60;
-    this.record.timeWorked = `${thours} hours, ${tminutes} minutes`;
+    this.record.timeWorked = `${thours} Stunden, ${tminutes} Minuten`;
     this.record.totalMinutes = actualWorkingTime;
 
     this.calculationFinished = true;
