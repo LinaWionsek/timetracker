@@ -5,6 +5,7 @@
 
 mat-toolbar {
     padding: 8px 16px;
+
     .toolbar-container {
         display: flex;
         align-items: center;
@@ -24,12 +25,14 @@ mat-toolbar {
         justify-content: center;
     }
 
-    .logout-icon {
+    .logout-mobile {
+        display: none;
         width: 24px;
         height: 24px;
         cursor: pointer;
         margin-top: 8px;
         margin-left: 8px;
+
         &:hover {
             cursor: pointer;
             border-radius: 4px;
@@ -37,10 +40,22 @@ mat-toolbar {
         }
     }
 
+    .logout-desktop {
+        display: block;
+        font-size: 14px;
+    }
+
     @media (max-width: 600px) {
 
         height: 156px !important;
 
+        .logout-mobile {
+            display: block;
+        }
+
+        .logout-desktop {
+            display: none;
+        }
 
         .toolbar-container {
             flex-direction: column;
