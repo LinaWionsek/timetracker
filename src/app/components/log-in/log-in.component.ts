@@ -1,31 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { AuthenticationService  } from '../services/authentication.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-// import { AuthHeaderComponent } from '../auth-header/auth-header.component';
-// import { PasswordVisibilityService } from '../../services/password-visibility.service';
-// import { ToastService } from '../../services/toast.service';
-// import { ToastComponent } from '../../shared-components/toast/toast.component';
-// import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Auth, signInAnonymously } from '@angular/fire/auth';
-import { GoogleAuthProvider } from 'firebase/auth';
-import { User } from '../models/user.class';
+import { Auth } from '@angular/fire/auth';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
-import { ToastComponent } from "../toast/toast.component";
-import { ToastService } from '../services/toast.service';
+import { AuthenticationService } from '../../services/authentication.service';
+import { ToastComponent } from '../../toast/toast.component';
+import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-log-in',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule,
-    // AuthHeaderComponent,
     FormsModule,
     CommonModule,
-    // ToastComponent,
     RouterModule,
     MatInputModule,
     MatIconModule,
@@ -104,44 +95,6 @@ export class LogInComponent {
       this.loginFailed = false;
     }, 5000);
   }
-
-  
-
-  // async loginWithGoogle(): Promise<void> {
-  //   let provider = new GoogleAuthProvider();
-
-  //   try {
-  //     let result = await this.afAuth.signInWithPopup(provider);
-  //     let user = result.user;
-
-  //     if (!user) {
-  //       throw new Error('Kein Benutzer-Datenobjekt gefunden.');
-  //     }
-
-  //     const fullName = user.displayName || '';
-  //     const [firstName, ...lastNameParts] = fullName.trim().split(' ');
-  //     const lastName = lastNameParts.join(' ');
-
-  //     const userData: User = new User({
-  //       id: user.uid,
-  //       firstName: firstName,
-  //       lastName: lastName,
-  //       email: user.email || '',
-  //       avatar: 'assets/img/avatar_empty.png',
-  //       isOnline: true,
-  //     });
-
-  //     // this.toastService.showToast('Google Login erfolgreich!');
-  //     await this.authService.saveUserData(user.uid, userData.toPlainObject());
-  //     this.authService.setOnlineStatus(true);
-
-  //     setTimeout(() => {
-  //       this.navigateToMainPage();
-  //     }, 1000);
-  //   } catch (error) {
-  //     console.error('Fehler beim Verarbeiten der Benutzerdaten:', error);
-  //   }
-  // }
 
 
 }

@@ -2,20 +2,21 @@ import { Component, inject, Input, SimpleChanges, ViewChild } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Timerecords } from '../models/timerecords.class';
+import { Timerecords } from '../../models/timerecords.class';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 import { DialogDeleteRecordComponent } from '../dialog-delete-record/dialog-delete-record.component';
-import { DataStoreServiceService } from '../services/data-store-service.service';
+import { DataStoreServiceService } from '../../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
-import { User } from '../models/user.class';
+import { User } from '../../models/user.class';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import { MatPaginator } from '@angular/material/paginator';
-import { ToastComponent } from "../toast/toast.component";
-import { ToastService } from '../services/toast.service';
+import { ToastComponent } from "../../toast/toast.component";
+import { ToastService } from '../../services/toast.service';
 import { de } from 'date-fns/locale';
 import { format } from 'date-fns';
+
 @Component({
   selector: 'app-daily-logs',
   standalone: true,

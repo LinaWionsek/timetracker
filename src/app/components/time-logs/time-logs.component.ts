@@ -2,9 +2,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Timerecords } from '../models/timerecords.class';
-import { DailyLogsComponent } from '../daily-logs/daily-logs.component';
-import { DataStoreServiceService } from '../services/data-store-service.service';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Component, ViewChild, computed, inject, signal } from '@angular/core';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
@@ -15,11 +12,15 @@ import {
   isWithinInterval, getISOWeek, addDays, getDay
 } from 'date-fns';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthenticationService } from '../services/authentication.service';
 import { Subscription } from 'rxjs';
-import { User } from '../models/user.class';
 import { MatSelectModule } from '@angular/material/select';
+import { Timerecords } from '../../models/timerecords.class';
+import { User } from '../../models/user.class';
+import { DataStoreServiceService } from '../../services/data-store-service.service';
+import { AuthenticationService } from '../../services/authentication.service';
+import { DailyLogsComponent } from '../daily-logs/daily-logs.component';
 import { MonthlyStatsComponent } from '../monthly-stats/monthly-stats.component';
+
 interface WeeklyData {
   weekStart: string;
   weekEnd: string;

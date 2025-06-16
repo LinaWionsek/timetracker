@@ -13,13 +13,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialogRef } from '@angular/material/dialog';
 
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
-import { Timerecords } from '../models/timerecords.class';
-import { DataStoreServiceService } from '../services/data-store-service.service';
+import { Timerecords } from '../../models/timerecords.class';
+import { DataStoreServiceService } from '../../services/data-store-service.service';
 import { Subscription } from 'rxjs';
-import { AuthenticationService } from '../services/authentication.service';
-import { User } from '../models/user.class';
-import { ToastComponent } from '../toast/toast.component';
-import { ToastService } from '../services/toast.service';
+import { AuthenticationService } from '../../services/authentication.service';
+import { User } from '../../models/user.class';
+import { ToastComponent } from '../../toast/toast.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-time-record-form',

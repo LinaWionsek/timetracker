@@ -1,5 +1,5 @@
-@import "./../../mixins.scss";
-
+@import "./../../../mixins.scss";
+@import "./../../../styles";
 
 .logs-container {
   @include display-flex($fd: column, $gap: 16px);

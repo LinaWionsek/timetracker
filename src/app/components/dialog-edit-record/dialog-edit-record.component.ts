@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { Timerecords } from '../models/timerecords.class';
 import { MatDialogRef } from '@angular/material/dialog';
 import {MatDialogModule} from '@angular/material/dialog';
+import { Timerecords } from '../../models/timerecords.class';
 import { TimeRecordFormComponent } from '../time-record-form/time-record-form.component';
 @Component({
   selector: 'app-dialog-edit-record',

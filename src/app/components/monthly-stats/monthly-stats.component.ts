@@ -1,7 +1,7 @@
 import { Component, inject, Input, ViewChild, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { User } from '../models/user.class';
-import { Timerecords } from '../models/timerecords.class';
+import { User } from '../../models/user.class';
+import { Timerecords } from '../../models/timerecords.class';
 import { addDays, eachWeekOfInterval, endOfMonth, endOfWeek, format, getDay, getISOWeek, isSameMonth, isWithinInterval, startOfMonth } from 'date-fns';
 import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';

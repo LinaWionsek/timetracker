@@ -1,5 +1,5 @@
-@import "./../../mixins.scss";
-@import "./../../styles";
+@import "./../../../mixins.scss";
+@import "./../../../styles";
 
 .content {
   @include display-flex($fd: column, $gap: 16px);

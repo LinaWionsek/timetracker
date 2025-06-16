@@ -1,6 +1,5 @@
-@import "./../../mixins.scss";
-@import "./../../styles";
-
+@import "./../../../mixins.scss";
+@import "./../../../styles";
 
 .day {
   @include display-flex($jc: space-between);

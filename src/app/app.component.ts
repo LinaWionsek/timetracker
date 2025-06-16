@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
-import { HeaderComponent } from './header/header.component';
-import { FooterComponent } from './footer/footer.component';
+import { FooterComponent } from './shared/footer/footer.component';
 import { AuthenticationService } from './services/authentication.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { HeaderComponent } from './shared/header/header.component';
 @Component({
   selector: 'app-root',
   standalone: true,

@@ -1,13 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Timerecords } from '../models/timerecords.class';
-import { DataStoreServiceService } from '../services/data-store-service.service';
+import { Timerecords } from '../../models/timerecords.class';
+import { DataStoreServiceService } from '../../services/data-store-service.service';
 import { startOfWeek, format, endOfWeek } from 'date-fns';
 import { MatIconModule } from '@angular/material/icon';
 import { DialogEditRecordComponent } from '../dialog-edit-record/dialog-edit-record.component';
 import { MatDialog } from '@angular/material/dialog';
-import { User } from '../models/user.class';
-import { AuthenticationService } from '../services/authentication.service';
+import { User } from '../../models/user.class';
+import { AuthenticationService } from '../../services/authentication.service';
 
 
 @Component({
