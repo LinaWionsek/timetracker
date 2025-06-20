@@ -1,0 +1,64 @@
+@import "./../../../styles.scss";
+
+section {
+    //   font-family: $montserratFont;
+    font-size: 16px;
+    padding: 100px;
+    width: 1440px;
+
+}
+
+::ng-deep p {
+    margin: 16px 0px;
+}
+
+::ng-deep a {
+    color: black;
+}
+
+.wrapper {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+    // height: calc(100vh - 144px)
+
+}
+
+.img-container {
+    display: flex;
+    justify-content: flex-end;
+
+    img {
+        height: 40px;
+        width: 40px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}
+
+@media (max-width: 1440px) {
+    section {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1280px) {
+    section {
+        padding: 50px;
+    }
+}
+
+@media (max-width: 900px) {
+    section {
+        padding: 25px;
+    }
+}
+
+@media (max-width: 360px) {
+    section {
+        padding: 10px;
+    }
+}
